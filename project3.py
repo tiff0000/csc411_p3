@@ -1,5 +1,5 @@
 import operator
-
+import random
 
 def part1():
     """
@@ -18,24 +18,32 @@ def part1():
     print ("real: " + str(top_10_real))
     print("fake: " + str(top_10_fake))
 
-    training_set, validation_set, test_set = [], [], []
-    training_label, validation_label, test_label = [], [], []
+    dataset = []
+    for headline in real_data:
+        for word in headline:
+            dataset.append([word, 0])
 
-    real_data_size = len(real_data)
-    validation_index = int(0.70 * real_data_size)
-    test_index = int(0.85 * real_data_size)
+    for headline in fake_data:
+        for word in headline:
+            dataset.append([word, 1])
 
-    real_data_random = get_word_stats()
-    i = 0
-    while (i < real_data_size):
-        for word in real_data[i]:
-            training_set.append(word)
-            training_label.append()
+    random.shuffle(dataset)
+    print(len(dataset))
 
+    validation_index = int(0.7 * len(dataset))
+    print(validation_index)
+    test_index = int(0.85 * len(dataset))
+    print(test_index)
 
+    training_set = [dataset[i][0] for i in range(validation_index)]
+    validation_set = [dataset[i][0] for i in range(validation_index, test_index)]
+    test_set = [dataset[i][0] for i in range(validation_index, len(dataset) - 1)]
 
+    training_label = [dataset[i][1] for i in range(validation_index)]
+    validation_label = [dataset[i][1] for i in range(validation_index, test_index)]
+    test_label = [dataset[i][1] for i in range(validation_index, len(dataset) - 1)]
 
-
+    return training_set, validation_set, test_set, training_label, validation_label, test_label
 
 def get_data_as_list(filename):
     """
