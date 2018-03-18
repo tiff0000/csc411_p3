@@ -1,5 +1,8 @@
 import operator
 import random
+import math
+# from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+
 
 def get_data_as_list(filename):
     """
@@ -156,7 +159,7 @@ def part2():
 
     # test performance
     for i in range(len(test_set)):
-        if posterior_prob(test_set[i], "real") >= 0.5 and test_label[i] == 1:
+        if posterior_prob(test_set[i], "real") >= posterior_prob(test_set[i], "fake"):
             test_correct += 1
 
     # print("validation performance: ", val_correct)
@@ -185,9 +188,10 @@ def get_likehood_table(outcome):
 
     if outcome == "real":
         likelihood_dict_real = {}
-        for headline in validation_set:
-            for word in headline:
-                if not likelihood_dict_real.has_key(word):
+        for i in range(len(validation_set)):
+        # for headline in validation_set:
+            for word in validation_set[i]:
+                if not (likelihood_dict_real.has_key(word) and validation_label[i] == 1):
                     likelihood_dict_real[word] = 1.
                 else:
                     likelihood_dict_real[word] += 1.
@@ -201,12 +205,12 @@ def get_likehood_table(outcome):
 
     if outcome == "fake":
         likelihood_dict_fake = {}
-        for headline in validation_set:
-            for word in headline:
-                if not likelihood_dict_fake.has_key(word):
-                    likelihood_dict_fake[word] = 1
+        for i in range(len(validation_set)):
+            for word in validation_set[i]:
+                if not likelihood_dict_fake.has_key(word) and validation_label[i] == 0:
+                    likelihood_dict_fake[word] = 1.
                 else:
-                    likelihood_dict_fake[word] += 1
+                    likelihood_dict_fake[word] += 1.
 
         for key in likelihood_dict_fake:
             likelihood_dict_fake[key] /= fake_num
@@ -219,14 +223,15 @@ def likelihood_prob(headline, outcome):
     Return the likelihood probability of the headline based on outcome (real or fake)
     """
     likelihood_table = get_likehood_table(outcome)
+
     for key in likelihood_table:
         if key not in headline:
             likelihood_table[key] = 1. - likelihood_table[key]
 
-    likelihood = 1.
+    likelihood = 0
     for key in likelihood_table:
-        likelihood *= likelihood_table[key]
-
+        likelihood += math.log(likelihood_table[key])
+    print(likelihood)
     return likelihood
 
 
