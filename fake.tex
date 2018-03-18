@@ -1,0 +1,746 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Programming/Coding Assignment
+% LaTeX Template
+%
+% This template has been downloaded from:
+% http://www.latextemplates.com
+%
+% Original author:
+% Ted Pavlic (http://www.tedpavlic.com)
+%
+% Note:
+% The \lipsum[#] commands throughout this template generate dummy text
+% to fill the template out. These commands should all be removed when 
+% writing assignment content.
+%
+% This template uses a Perl script as an example snippet of code, most other
+% languages are also usable. Configure them in the "CODE INCLUSION 
+% CONFIGURATION" section.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{subcaption}
+\usepackage{listings} % Required for insertion of code
+\usepackage{courier} % Required for the courier font
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1} % Line spacing
+
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName} % Top left header
+\chead{\hmwkClass\ (\hmwkClassTime): \hmwkTitle} % Top center head
+%\rhead{\firstxmark} % Top right header
+\lfoot{\lastxmark} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \protect\pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+%----------------------------------------------------------------------------------------
+%	CODE INCLUSION CONFIGURATION
+%----------------------------------------------------------------------------------------
+
+\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0} % This is the color used for comments
+\lstloadlanguages{Perl} % Load Perl syntax for listings, for a list of other languages supported see: ftp://ftp.tex.ac.uk/tex-archive/macros/latex/contrib/listings/listings.pdf
+\lstset{language=Perl, % Use Perl in this example
+	frame=single, % Single frame around code
+	basicstyle=\small\ttfamily, % Use small true type font
+	keywordstyle=[1]\color{Blue}\bf, % Perl functions bold and blue
+	keywordstyle=[2]\color{Purple}, % Perl function arguments purple
+	keywordstyle=[3]\color{Blue}\underbar, % Custom functions underlined and blue
+	identifierstyle=, % Nothing special about identifiers                                         
+	commentstyle=\usefont{T1}{pcr}{m}{sl}\color{MyDarkGreen}\small, % Comments small dark green courier font
+	stringstyle=\color{Purple}, % Strings are purple
+	showstringspaces=false, % Don't put marks in string spaces
+	tabsize=5, % 5 spaces per tab
+	%
+	% Put standard Perl functions not included in the default language here
+	morekeywords={rand},
+	%
+	% Put Perl function parameters here
+	morekeywords=[2]{on, off, interp},
+	%
+	% Put user defined functions here
+	morekeywords=[3]{test},
+	%
+	morecomment=[l][\color{Blue}]{...}, % Line continuation (...) like blue comment
+	numbers=left, % Line numbers on left
+	firstnumber=1, % Line numbers start with line 1
+	numberstyle=\tiny\color{Blue}, % Line numbers are blue and small
+	stepnumber=5 % Line numbers go in steps of 5
+}
+
+% Creates a new command to include a perl script, the first parameter is the filename of the script (without .pl), the second parameter is the caption
+\newcommand{\perlscript}[2]{
+	\begin{itemize}
+		\item[]\lstinputlisting[caption=#2,label=#1]{#1.pl}
+	\end{itemize}
+}
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT STRUCTURE COMMANDS
+%	Skip this unless you know what you're doing
+%----------------------------------------------------------------------------------------
+
+% Header and footer for when a page split occurs within a problem environment
+\newcommand{\enterProblemHeader}[1]{
+	%\nobreak\extramarks{#1}{#1 continued on next page\ldots}\nobreak
+	%\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+}
+
+% Header and footer for when a page split occurs between problem environments
+\newcommand{\exitProblemHeader}[1]{
+	%\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+	%\nobreak\extramarks{#1}{}\nobreak
+}
+
+\setcounter{secnumdepth}{0} % Removes default section numbers
+\newcounter{homeworkProblemCounter} % Creates a counter to keep track of the number of problems
+\setcounter{homeworkProblemCounter}{-1}
+
+\newcommand{\homeworkProblemName}{}
+\newenvironment{homeworkProblem}[1][Problem \arabic{homeworkProblemCounter}]{ % Makes a new environment called homeworkProblem which takes 1 argument (custom name) but the default is "Problem #"
+	\stepcounter{homeworkProblemCounter} % Increase counter for number of problems
+	\renewcommand{\homeworkProblemName}{#1} % Assign \homeworkProblemName the name of the problem
+	\section{\homeworkProblemName} % Make a section in the document with the custom problem count
+	\enterProblemHeader{\homeworkProblemName} % Header and footer within the environment
+}{
+	\exitProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+\newcommand{\problemAnswer}[1]{ % Defines the problem answer command with the content as the only argument
+	\noindent\framebox[\columnwidth][c]{\begin{minipage}{0.98\columnwidth}#1\end{minipage}} % Makes the box around the problem answer and puts the content inside
+}
+
+\newcommand{\homeworkSectionName}{}
+\newenvironment{homeworkSection}[1]{ % New environment for sections within homework problems, takes 1 argument - the name of the section
+	\renewcommand{\homeworkSectionName}{#1} % Assign \homeworkSectionName to the name of the section from the environment argument
+	\subsection{\homeworkSectionName} % Make a subsection with the custom name of the subsection
+	\enterProblemHeader{\homeworkProblemName\ [\homeworkSectionName]} % Header and footer within the environment
+}{
+	\enterProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+%----------------------------------------------------------------------------------------
+%	NAME AND CLASS SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\hmwkTitle}{Project 2} % Assignment title
+\newcommand{\hmwkDueDate}{Sunday,\ February\ 18,\ 2018} % Due date
+\newcommand{\hmwkClass}{CSC411} % Course/class
+\newcommand{\hmwkClassTime}{L0101} % Class/lecture time
+\newcommand{\hmwkAuthorName}{Ying Yang} % Your name
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title{
+	\vspace{2in}
+	\textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+	\normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate}\\
+	\vspace{0.1in}
+	\vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+%\date{} % Insert date here if you want it to appear below your name
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+	
+	\maketitle
+	\clearpage
+	%----------------------------------------------------------------------------------------
+	%	PROBLEM 1
+	%----------------------------------------------------------------------------------------
+	
+	% To have just one problem per page, simply put a \clearpage after each problem
+	
+	\begin{homeworkProblem}[ Part 1]
+		
+		\noindent \textit{Dataset description}
+		$\newline$
+		
+		We collected the top 10 word occurences from each of real and fake news data files.
+		The result is show below:
+		
+		Real:
+		
+		[('trump', 1744), ('donald', 829), ('to', 413), ('us', 230), ('trumps', 219), ('in', 214), ('on', 205),
+		('of', 186), ('says', 178), ('for', 174), ('the', 173), ('and', 116), ('with', 104), ('a', 93),
+		('election', 87)]
+		
+		Fake:
+		
+		[('trump', 1328), ('the', 439), ('to', 409), ('in', 231), ('donald', 228), ('of', 212), ('for', 205),
+		('a', 192), ('and', 180), ('on', 166), ('is', 157), ('hillary', 150), ('clinton', 132), ('with', 100),
+		('will', 96)]
+		
+		Example of 3 useful keywords are trump, donald, and hillary
+		
+		$\newline$
+
+		
+		
+	\end{homeworkProblem}
+	\clearpage
+	%----------------------------------------------------------------------------------------
+	%	PROBLEM 2
+	%----------------------------------------------------------------------------------------
+	
+	\begin{homeworkProblem}[ Part 2]
+		
+		\noindent \textit{Problem: Implement the Naive Bayes algorithm for predicting whether a headline is real or fake. }
+		
+		
+		$\newline$
+		We used validation set to tune the parameters.
+		
+		We used the following formula to get the probability of a headline to be real or fake. 
+		
+		P(real $\mid$ headline) =  P(headline\_word\_1 $\mid$ real) * P(headline\_word\_2 $\mid$ real) * ... * P(headline\_word\_n $\mid$ real)   * P(real)
+		
+		\begin{lstlisting}[language=Python, caption=Compute network function]
+		import numpy as np
+		
+		def compute_network(x, W, b):
+		"""
+		Compute the network to get output o using sum of linear combination
+		of input x and weight W and b
+		"""
+		o = np.dot(W.T, x) + b
+		return softmax(o)
+		
+		if __name__ == "__main__":
+		M = loadmat("mnist_all.mat")
+		np.random.seed(10)
+		x = (M["train0"][100].reshape((28 * 28, 1))) / 255.0
+		W = np.random.rand(28 * 28, 10)
+		b = np.random.rand(10, 1)
+		compute_network(x, W, b)
+		\end{lstlisting}
+		
+	\end{homeworkProblem}
+	\clearpage
+	%----------------------------------------------------------------------------------------
+	%	PROBLEM 3
+	%----------------------------------------------------------------------------------------
+	
+	\begin{homeworkProblem}[Part 3]
+		
+		\begin{homeworkProblem}[Part 3a]
+			\noindent \textit{Compute the gradient of the cost function with respect to the weight $w_{ij}$}
+			$\newline$
+			
+			Defining terms:
+			
+			
+			Cost function for a single training case: C = - $\sum_{j} y_jlogp_j$
+			
+			$p_i = \frac{exp(o_i)}{\sum_{j} exp(o_j)}$
+			
+			Compute the gradient descent: $\frac{\partial C }{\partial o_i}$ = $\sum_{j} \frac{\partial C }{\partial p_j} \frac{\partial p_j }{\partial o_i}$ = $p_i - y_i$
+			
+			
+		\end{homeworkProblem}
+		
+		\begin{homeworkProblem}[Part 3b]
+			\noindent \textit{Write vectorized code that computes the gradient of the cost function with respect to the weights and biases of the network}
+			$\newline$
+			\begin{lstlisting}
+    dCdW = np.dot(x, (p.T-t.T))
+    dCdb = p-t
+    delta = 1e-10
+    N = W.shape[0]
+    K = W.shape[1]
+    for times in range(0,6):
+        i = np.random.randint(N)
+        j = np.random.randint(K)
+        print times, ("gradient of dCdW:"), dCdW[i][j], "\n"
+        theta = np.copy(W)
+        theta[i][j] = theta[i][j] + delta
+        fd = (cost_function(x, theta, b, t)-cost_function(x, W, b, t))/delta
+        print times, ("finite difference of dCdW:"), fd, "\n"
+        print times, ("gradient of dCdb:"), dCdb[j][0], "\n"
+        theta = np.copy(b)
+        theta[j][0] = theta[j][0] + delta
+        fd = (cost_function(x, W, theta,t)-cost_function(x, W, b, t))/delta
+        print times,("finite difference of dCdb:"), fd, "\n"
+			\end{lstlisting}
+            Output:
+0 gradient of dCdW: 0.0 
+
+0 finite difference of dCdW: 0.0 
+
+0 gradient of dCdb: 0.0188239452014 
+
+0 finite difference of dCdb: 0.0188293824976 
+
+1 gradient of dCdW: 0.0 
+
+1 finite difference of dCdW: 0.0 
+
+1 gradient of dCdb: 0.0458990966574 
+
+1 finite difference of dCdb: 0.0459010607301 
+
+2 gradient of dCdW: 0.0 
+
+2 finite difference of dCdW: 0.0 
+
+2 gradient of dCdb: 0.00211207762373 
+
+2 finite difference of dCdb: 0.00211386463889 
+
+3 gradient of dCdW: 0.0291950090963 
+
+3 finite difference of dCdW: 0.0291944246555 
+
+3 gradient of dCdb: 0.0298985032914 
+
+3 finite difference of dCdb: 0.0299049673913 
+
+4 gradient of dCdW: 0.0 
+
+4 finite difference of dCdW: 0.0 
+
+4 gradient of dCdb: 0.0610826151789 
+
+4 finite difference of dCdb: 0.0610800299228 
+
+5 gradient of dCdW: 0.0 
+
+5 finite difference of dCdW: 0.0 
+
+5 gradient of dCdb: 0.0188239452014 
+
+5 finite difference of dCdb: 0.0188293824976 
+
+Results of finite difference and gradient calculation are relatively equal, only some rounding errors.
+		\end{homeworkProblem}
+		
+	\end{homeworkProblem}
+	\clearpage
+	
+	%----------------------------------------------------------------------------------------
+	%	PROBLEM 4
+	%----------------------------------------------------------------------------------------
+	
+	\begin{homeworkProblem}[Part 4]
+		
+		\noindent \textit{Train the neural network using gradient descent (without momentum). Plot the learning curves. Display the weights going into each of the output units.}
+		
+		$\newline$
+		Optimization procedure:
+		
+		We initialized the parameters as follows:
+			\begin{lstlisting}[language=Python, caption=Parameter Initialization]
+		# load weights and biases
+		snapshot = cPickle.load(open("snapshot50.pkl"))
+		W0 = snapshot["W0"]  # dimension = (748, 300)
+		b0 = snapshot["b0"].reshape((300, 1))
+		W1 = snapshot["W1"]  # dimension = (300, 10)
+		b1 = snapshot["b1"].reshape((10, 1))
+		v_w = 0  # for momentum
+		v_b = 0
+		
+		# initiate weights, bias and alpha
+		w0b0 = dot(W0, b0)  # dimension = (748, 1)
+		w1b1 = dot(W1, b1)  # dimension = (300, 1)
+		initial_weight = dot(W0, W1)  # (748, 10)
+		initial_bias = (dot(W1.T, b0)) + b1  # (10, 1)
+		print "initial bias shape", ((dot(W1.T, b0)) + b1).shape[0], ((dot(W1.T, b0)) + b1).shape[1]
+		alpha = 1e-5  # learning rate
+		
+		# get train and test performance based on increased epochs
+		epoch, train_performance, test_performance = [], [], []
+		EPS = 1e-10
+		prev_w = initial_weight - 10 * EPS
+		prev_b = initial_bias - 10 * EPS
+		W = initial_weight.copy()
+		b = initial_bias.copy()
+		iteration = 0
+		max_iteration = 2000
+		\end{lstlisting}
+		
+		We initialized the weight to be the dot product of W0 and W1. 
+		We repeatedly experimented with different alpha values and observe the results. We first set alpha=0.001. The percentage of correctness turned out to be very low (with 25\% of correcteness).  Then we decreased the learning rate to 0.00001. The correctness percentage then improved to 89\%. 
+		
+		$\newline$
+		Gradient descent procedure:
+		
+		\begin{lstlisting}[language=Python, caption=Parameter Initialization]
+		# apply gradient descent
+		while norm(W - prev_w) > EPS and norm(b - prev_b) > EPS and iteration < max_iteration:
+			prev_w = W.copy()
+			prev_b = b.copy()
+			W -= alpha * df_w(train_set.T, W, b, train_label.T)
+			b -= alpha * df_b(train_set.T, W, b, train_label.T)
+			if iteration % 100 == 0:
+				epoch.append(iteration)
+				train_performance.append(performance(train_set.T, W, b, train_label.T))
+				test_performance.append(performance(test_set.T, W, b, test_label.T))
+			iteration += 1
+		\end{lstlisting}
+		
+		\clearpage
+		Display the weights:
+
+
+		$\newline$
+		\clearpage
+		
+		Learning curve is shown in the figure below:
+		$\newline$
+		
+
+		
+	
+		
+	\end{homeworkProblem}
+	\clearpage
+	
+	%----------------------------------------------------------------------------------------
+	%	PROBLEM 5
+	%----------------------------------------------------------------------------------------
+	
+	\begin{homeworkProblem}[Part 5]
+		
+		\noindent \textit{Write vectorized code that performs gradient descent with momentum, and use it to train your network. Plot the learning curves}
+		
+		Learning curve with momentum:l
+
+
+		How new learning curves compare with gradient descent without momentum: 
+		Without the momentum, the performance of correct guesses increased slower than if momentum were used. For example, as we can observe in the learning curve, the performance of training set only increased to 92\% after 800 iterations, wheareas with momentum term set to 0.99, the performance correcnesses increased to the same percentage by only using 400 iterations, because it moved faster when gradient consistenly points to one direction.
+		
+		$\newline$
+				
+		Code added in the gradient descent:
+		
+		In the train\_neural\_network method, method signature was modified to take two 
+		extra terms: type and momemtum term. The rest of code remains unchanged 
+		as in part 4.
+		\clearpage
+		
+		\begin{lstlisting}[language=Python, caption= Gradient descent with momentum]
+
+		train_neural_network(image_prefix, type="None", momentum_term=0):
+		
+		v_w = 0 # for momentum
+		v_b = 0
+		if type == "momentum":
+		    v_w = momentum_term * v_w + alpha * df_w(train_set.T, W, b, train_label.T)
+		    W -= v_w
+		    v_b = momentum_term * v_b + alpha * df_b(train_set.T, W, b, train_label.T)
+		    b -= v_b
+				
+		if __name__ == "__main__":
+			momentum_term = 0.99
+			train_neural_network("part5", "momentum", momentum_term)
+		\end{lstlisting}
+		   
+
+	\end{homeworkProblem}
+	\clearpage
+	%----------------------------------------------------------------------------------------
+	%	PROBLEM 6
+	%----------------------------------------------------------------------------------------
+	
+	\begin{homeworkProblem}[Part 6]
+		
+
+
+		
+		\begin{homeworkProblem}[Part 6d]
+			Momentum trajectory walks faster than vanilla gradient descent, and momentum can lead to points past the central local minimum while vanilla gradient descent walks directly to the local point. The cause of these differences is the extra term in momentum which is momentum\_term * v\_w speeds up the walking pace, and it retains effects of previous v\_m term.
+		\end{homeworkProblem}
+		
+		\begin{homeworkProblem}[Part 6e]
+			I found proper settings by checking the gradient descent values and trial-and-error. Whichever weights' values are the most among all the gradient descent values, should be chosen as the two variables. It speeds up the descent process. Another setting is momentum term. Choose it by trial-and-error to see which one fits the graph the best. Initial weights values are also important because the directions of original gradient descents can demonstrate the difference between two ways, too.\newline
+			\newline Other settings do not demonstrate the benefits of momentum are alpha and axis range. Choose plot axis which can zoom in the contour at the proper size and alpha which is neither too large nor too small. Momentum term do not really affect visualization unless it is so large that points past local minimum too much or offtrack too much.
+		\end{homeworkProblem}
+
+		
+	\end{homeworkProblem}
+	
+	\clearpage
+	%----------------------------------------------------------------------------------------
+	%	PROBLEM 7
+	%----------------------------------------------------------------------------------------
+	
+	\begin{homeworkProblem}[Part 7]
+	
+	Assumption: For each neuron, due to unknown size, suppose matrix multiplication complexity is 1.
+	
+	$ \newline$
+	 For i-th layer, each j in K neurons, backpropagation computes $w_j$ with complexity of O(K) for all i.
+	
+	$\newline$
+	 If it computes individually, $w_j$ has computation complexity of O($K^{2i-3}$)
+	
+	$ \newline$  
+	 Final computation complexity, for backpropagation, is O(N $K^2$), individually, is O($K^{2N-2}$) \newline When N is larger than 2, backpropagation is O($K^{2N-4}$) faster than individual computation on condition that N is known.
+	
+
+	\end{homeworkProblem}
+
+	\clearpage
+	%----------------------------------------------------------------------------------------
+	%	PROBLEM 8
+	%----------------------------------------------------------------------------------------
+	
+	\begin{homeworkProblem}[Part 8]
+		\noindent \textit{Use a fully-connected neural network with a single hidden layer, but train using mini-batches using an optimizer}
+		
+		Description of the system:
+		$\newline$
+		
+		We initialize inputs and weights as follows:
+		
+		dim\_x = 64 * 64 * 3
+		
+		dim\_h = 500
+		
+		dim\_out = 6
+		
+		We used one hidden layer of size 500. 
+		
+		The resolution was 64 * 64.
+		
+		We used Adam as optimizer
+		
+		The model we used was:
+			\begin{lstlisting}[language=Python, caption= model of the system]
+		x = Variable(torch.from_numpy(train_set[train_index]), 
+		                                  requires_grad=False).type(dtype_float)
+		y_classes = Variable(torch.from_numpy(np.argmax(train_label[train_index], 1)),
+		                          requires_grad=False).type(dtype_long)
+		
+		model = torch.nn.Sequential(
+		torch.nn.Linear(dim_x, dim_h),
+		torch.nn.ReLU(),
+		torch.nn.Linear(dim_h, dim_out),
+		)
+		\end{lstlisting}
+		
+		
+		
+		Optimization steps and outputs:
+		
+		We tried varying parameters, optimizers and functions and other factors that might improve the performance, such as initial weights, learning rate, batch size, number of iterations, optimization function to optimize the training performance, activation function, number of hidden layers, weight of hidden layers.
+		
+			\begin{lstlisting}[language=Python, caption=initial inputs and weights and parameters and functions chosen for optimization]
+			dim_x = 64 * 64 * 3
+			dim_h = 500
+			dim_out = 6
+			
+			learning_rate = 1e-4
+			max_iteration = 500
+			optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+			loss_fn = torch.nn.CrossEntropyLoss()
+			\end{lstlisting}
+		
+		Observations:
+		Activation function: Since we are using mini-batches, we found out that ReLU was the best option. It accelerates the convergencce of stochastic gradient descent compared to sigmoid and tanh functions.
+		
+		Learning rate: We first tried using learning rate of 0.001 then increased to 0.00001. We found out that the performance was best at learning rate = 0.0001. The performance improved from 0.001 to 0.0001 but decreased from 0.0001 to 0.00001. 
+		
+		Number of layers: We experimented with a single and 2 hidden layers, with fixed weight. Keeping other parameters unchanged, we found unsignificant difference between having 2 or 1 hidden layers.
+		
+		Weights: We experimented with weights from 20 to 700. At low weight, the test performance had poor results. The accuracy performance increased slower compared to having setting weight as 700. Also, the test performance was unstable when the weight was low. It might first increase and decrease later.
+		
+		\clearpage
+		Learning curve:
+		
+
+		
+		Final performance: The performance of the test set was at 85.83\%. 
+		
+		The results were:
+		
+		test performance:  36.6666666667
+		
+		test performance:  83.3333333333
+		
+		test performance:  85.0
+		
+		test performance:  85.0
+		
+		test performance:  86.6666666667
+		
+		test performance:  85.8333333333
+		
+		test performance:  85.8333333333
+		
+		test performance:  85.8333333333
+		
+		test performance:  85.8333333333
+		
+		test performance:  85.8333333333
+		
+		test performance:  85.8333333333
+		
+	\end{homeworkProblem}
+	
+	\clearpage
+	%----------------------------------------------------------------------------------------
+		%----------------------------------------------------------------------------------------
+		%	PROBLEM 9
+		%----------------------------------------------------------------------------------------
+		
+		\begin{homeworkProblem}[Part 9]
+		\noindent \textit{Select two of the actors, and visualize the weights of the hidden units that are useful for classifying input photos as those particular actors. Explain how you selected the hidden units}	
+		
+		Actors selected: balwin and bracco
+		
+		Approach: Try lots of images in a dataset, and
+		see which ones active the neuron the most.
+		
+		\end{homeworkProblem}
+	
+		%----------------------------------------------------------------------------------------
+		%----------------------------------------------------------------------------------------
+		%	PROBLEM 10
+		%----------------------------------------------------------------------------------------
+		\clearpage
+		\begin{homeworkProblem}[Part 10]
+			
+		We modified code for AlexNet.  We want to extract activation values before it classifies the actor, so we deleted the line x = x.classifier(x) in forward() method. 
+		
+		The modified code is:
+		
+		\begin{lstlisting}[language=Python, caption=modified code for AlexNet]
+		class MyAlexNet(nn.Module):
+			def load_weights(self):
+				an_builtin = torchvision.models.alexnet(pretrained=True)
+			
+			features_weight_i = [0, 3, 6, 8, 10]
+			for i in features_weight_i:
+				self.features[i].weight = an_builtin.features[i].weight
+				self.features[i].bias = an_builtin.features[i].bias
+			
+			classifier_weight_i = [1, 4, 6]
+			for i in classifier_weight_i:
+				self.classifier[i].weight = an_builtin.classifier[i].weight
+				self.classifier[i].bias = an_builtin.classifier[i].bias
+			
+			def __init__(self, num_classes=1000):
+				super(MyAlexNet, self).__init__()
+				self.features = nn.Sequential(
+					nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2),
+					nn.ReLU(inplace=True),
+					nn.MaxPool2d(kernel_size=3, stride=2),
+					nn.Conv2d(64, 192, kernel_size=5, padding=2),
+					nn.ReLU(inplace=True),
+					nn.MaxPool2d(kernel_size=3, stride=2),
+					nn.Conv2d(192, 384, kernel_size=3, padding=1),
+					nn.ReLU(inplace=True),
+					nn.Conv2d(384, 256, kernel_size=3, padding=1),
+					nn.ReLU(inplace=True),
+					nn.Conv2d(256, 256, kernel_size=3, padding=1),
+					nn.ReLU(inplace=True),
+					nn.MaxPool2d(kernel_size=3, stride=2)
+				)
+			
+			self.classifier = nn.Sequential(
+				nn.Dropout(),
+				nn.Linear(256 * 6 * 6, 4096),
+				nn.ReLU(inplace=True),
+				nn.Dropout(),
+				nn.Linear(4096, 4096),
+				nn.ReLU(inplace=True),
+				nn.Linear(4096, num_classes),
+			)
+			
+			self.load_weights()
+			
+			# we modified this section
+			def forward(self, x):
+				x = self.features(x)
+				x = x.view(x.size(0), 256 * 6 * 6)
+		
+		\end{lstlisting}
+		
+		Extract the values of the activations of AlexNet on the face images in a particular layer
+		
+		Input images size: 227*227
+		
+		We will extract activations of the network during the forward pass.
+		
+		Then, we use part 8 model to train a fully-connected neural network by taking the activations as input.
+		
+		Get the activation values as input to part8 code as follows:
+		
+		\begin{lstlisting}[language=Python, caption=How to get activation values]
+		# get train and test activations using forward
+		x_train = Variable(torch.from_numpy(train_set[:]), requires_grad=False).type(torch.FloatTensor)
+		train_activation = np.vstack((train_activation, model.forward(x_train).data.numpy()))
+		x_test = Variable(torch.from_numpy(train_set[:]), requires_grad=False).type(torch.FloatTensor)
+		test_activation = np.vstack((test_activation, model.forward(x_test).data.numpy()))
+		
+		train_using_mini_batches(act, train_activation, test_activation, "part10", 227)
+		\end{lstlisting}
+		
+		$\newline$
+		Performance:
+		
+		The performance dramatically improved compared to part8.
+		
+		Using myAlexNet model, we were able to obtain a final performance of 95.83%
+		
+		The following is the performance:
+		
+		('epoch: ', 0, 'train performance:', 55.21172638436482, 'test performance: ', 45.83333333333333)
+		
+		('epoch: ', 50, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
+		
+		('epoch: ', 100, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
+		
+		('epoch: ', 150, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
+		
+		('epoch: ', 200, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
+		
+		('epoch: ', 250, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
+		
+		('epoch: ', 300, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
+		
+		('epoch: ', 350, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
+		
+		('epoch: ', 400, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
+		
+		('epoch: ', 450, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
+		
+		('epoch: ', 499, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
+		
+		The performance improved by more than 30\% compared to part 8.
+		
+		Run the part10 code using:
+		python myalexnet.py
+		
+		\end{homeworkProblem}
+\end{document}
