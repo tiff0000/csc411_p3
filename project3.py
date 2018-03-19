@@ -1,6 +1,7 @@
 import operator
 import random
 import math
+import numpy as np
 # from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 
@@ -158,20 +159,24 @@ def part2():
     #         train_correct += 1
 
     # test performance
+
+    m = 10
+    p_hat = 0.5
+    count = 0
     for i in range(len(test_set)):
-        if posterior_prob(test_set[i], "real") >= posterior_prob(test_set[i], "fake"):
-            test_correct += 1
+        if posterior_prob(test_set[i], "real", m, p_hat) > posterior_prob(test_set[i], "fake", m, p_hat):
+            count += 1
 
     # print("validation performance: ", val_correct)
     # print("training performance: ", train_correct)
-    print("test performance: ", test_correct)
+    print("test performance: ", count / len(test_set))
 
 
-def posterior_prob(headline, outcome):
-    return likelihood_prob(headline, outcome) * prior_prob(outcome)
+def posterior_prob(headline, outcome, m, p_hat):
+    return likelihood_prob(headline, outcome, m, p_hat) * prior_prob(outcome)
 
 
-def get_likehood_table(outcome):
+def get_likehood_table(outcome, m, p_hat):
     """
     Get a likelihood table where keys are words, and value is the likelihood probability
 
@@ -186,52 +191,59 @@ def get_likehood_table(outcome):
     real_num = validation_label.count(1)
     fake_num = validation_label.count(0)
 
+    # count number of occurrences for each word
     if outcome == "real":
         likelihood_dict_real = {}
         for i in range(len(validation_set)):
-        # for headline in validation_set:
             for word in validation_set[i]:
-                if not (likelihood_dict_real.has_key(word) and validation_label[i] == 1):
-                    likelihood_dict_real[word] = 1.
-                else:
-                    likelihood_dict_real[word] += 1.
+                # increment word occurences for real news
+                if (validation_label[i] == 1):
+                    if not (likelihood_dict_real.has_key(word)):
+                        likelihood_dict_real[word] = 1.
+                    else:
+                        likelihood_dict_real[word] += 1.
 
         # get likelihoood probabilities
         for key in likelihood_dict_real:
-            likelihood_dict_real[key] /= float(real_num)
+            # print(key, likelihood_dict_real[key])
+            # print(real_num)
+            likelihood_dict_real[key] = float((likelihood_dict_real[key] + m * p_hat)) / (float(real_num) + m)
 
-        # print(likelihood_dict_real)
+
         return likelihood_dict_real
 
     if outcome == "fake":
         likelihood_dict_fake = {}
         for i in range(len(validation_set)):
             for word in validation_set[i]:
-                if not likelihood_dict_fake.has_key(word) and validation_label[i] == 0:
+                if not (likelihood_dict_fake.has_key(word) and validation_label[i] == 0):
                     likelihood_dict_fake[word] = 1.
                 else:
                     likelihood_dict_fake[word] += 1.
 
         for key in likelihood_dict_fake:
-            likelihood_dict_fake[key] /= fake_num
+            likelihood_dict_fake[key] /= float((likelihood_dict_fake[key] + m * p_hat))/ (float(fake_num) + m)
 
         return likelihood_dict_fake
 
 
-def likelihood_prob(headline, outcome):
+def likelihood_prob(headline, outcome, m, p_hat):
     """
     Return the likelihood probability of the headline based on outcome (real or fake)
     """
-    likelihood_table = get_likehood_table(outcome)
+    likelihood_table = get_likehood_table(outcome, m, p_hat)
 
-    for key in likelihood_table:
-        if key not in headline:
-            likelihood_table[key] = 1. - likelihood_table[key]
+    # for key in likelihood_table:
+    #     if key not in headline:
+    #         likelihood_table[key] = 1. - likelihood_table[key]
 
     likelihood = 0
     for key in likelihood_table:
-        likelihood += math.log(likelihood_table[key])
-    print(likelihood)
+        if key not in headline:
+            likelihood += 1 - math.log(likelihood_table[key])
+        else:
+            likelihood += math.log(likelihood_table[key])
+
     return likelihood
 
 
@@ -246,6 +258,7 @@ def prior_prob(real_or_fake):
 if __name__ == "__main__":
     # print top 10 occurences from each real and fake news
     # part1()
+
     part2()
     # part3()
     # part4()
