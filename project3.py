@@ -4,7 +4,8 @@ import math
 import numpy as np
 
 
-from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+
+from stop_words import ENGLISH_STOP_WORDS
 
 # print(ENGLISH_STOP_WORDS)
 
@@ -410,28 +411,19 @@ def get_strongly_predict(presence_or_absence, real_or_fake, dataset, dataset_lab
 
     return presence_strongly_predicts_real
 
+def part4():
+
 
 if __name__ == "__main__":
     # part1()
     # part2()
     # part3a()
+    # part3b()
     # part4()
+    # part5()
+    # part6()
+    # part7()
+    # part8():
     # tune_parameters()
     # dataset_label = []
     # get_strongly_predict("presence", "real", part3_dataset, part3_dataset_label)
-
-    presence_strongly_predicts_real = get_strongly_predict("presence", "real", part3_dataset, part3_dataset_label)
-    print("presence_strongly_predicts_real: ")
-    print(presence_strongly_predicts_real)
-
-    absence_strongly_predict_real = get_strongly_predict("absence", "real", part3_dataset, part3_dataset_label)
-    print("absence_strongly_predict_real: ")
-    print(absence_strongly_predict_real)
-
-    presence_strongly_predicts_fake = get_strongly_predict("presence", "fake", part3_dataset, part3_dataset_label)
-    print("presence_strongly_predicts_fake")
-    print(presence_strongly_predicts_fake)
-
-    absence_strongly_predict_fake = get_strongly_predict("absence", "fake", part3_dataset, part3_dataset_label)
-    print("absence_strongly_predict_fake")
-    print(absence_strongly_predict_fake)
