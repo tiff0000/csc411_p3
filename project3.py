@@ -373,6 +373,49 @@ def get_strongly_predict(presence_or_absence, real_or_fake, dataset_label):
             for key in presence_strongly_predicts_real:
                 print(key, presence_strongly_predicts_real[key])
 
+
+# def part7():
+#     # train = train_matrix
+#     # valid = #valid_matrix
+#     # test = #test_matrix
+#
+#     # train_y = #train_label vector
+#     # valid_y = #valid_label vector
+#     # test_y = #test_label vector
+#
+#     depths = range(0, 1000, 100)
+#     train_output = []
+#     valid_output = []
+#     test_output = []
+#
+#     for depth in depths:
+#         clf = tree.DecisionTreeClassifier(max_depth=depth)
+#         clf = clf.fit(train, train_y)
+#
+#         dot_data = tree.export_graphviz(clf, max_depth=2, out_file=None, feature_names=words)
+#         export_graphviz(clf, max_depth=2, out_file=dot_data, filled=True, rounded=True,
+#                         special_characters=True)
+#
+#         ave = np.mean(clf.predict(train) == train_y)
+#         train_output.append(avg)
+#
+#         ave = np.mean(clf.predict(valid) == valid_y)
+#         valid_output.append(avg)
+#
+#         ave = np.mean(clf.predict(test) == test_y)
+#         test_output.append(ave)
+#
+#     plot1, = plt.plot(depths, train_output, label='training set')
+#     plot2, = plt.plot(depths, valid_output, label='validation set')
+#     plot3, = plt.plot(depths, test_output, label='test set')
+#
+#     plt.legend([plot1, plot2, plot3], ['Training', 'Validation', 'Test'])
+#     plt.title('Depths and performances')
+#     plt.xlabel('Max depth')
+#     plt.ylabel('Performance')
+#     plt.show()
+
+
 if __name__ == "__main__":
     # part1()
     part2()
