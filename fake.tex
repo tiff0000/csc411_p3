@@ -218,30 +218,20 @@
 		
 		
 		$\newline$
-		We used validation set to tune the parameters.
+		Implementation details:
+		
+		We used validation set to tune the parameters m and p
+		
+		
 		
 		We used the following formula to get the probability of a headline to be real or fake. 
 		
 		P(real $\mid$ headline) =  P(headline\_word\_1 $\mid$ real) * P(headline\_word\_2 $\mid$ real) * ... * P(headline\_word\_n $\mid$ real)   * P(real)
 		
+		
+		
 		\begin{lstlisting}[language=Python, caption=Compute network function]
-		import numpy as np
 		
-		def compute_network(x, W, b):
-		"""
-		Compute the network to get output o using sum of linear combination
-		of input x and weight W and b
-		"""
-		o = np.dot(W.T, x) + b
-		return softmax(o)
-		
-		if __name__ == "__main__":
-		M = loadmat("mnist_all.mat")
-		np.random.seed(10)
-		x = (M["train0"][100].reshape((28 * 28, 1))) / 255.0
-		W = np.random.rand(28 * 28, 10)
-		b = np.random.rand(10, 1)
-		compute_network(x, W, b)
 		\end{lstlisting}
 		
 	\end{homeworkProblem}
