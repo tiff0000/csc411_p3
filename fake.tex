@@ -243,17 +243,26 @@
 	\begin{homeworkProblem}[Part 3]
 		
 		\begin{homeworkProblem}[Part 3a]
-			\noindent \textit{Compute the gradient of the cost function with respect to the weight $w_{ij}$}
+			
+			How we obtained the words:
+			
+			
+			
+			
+			
 			$\newline$
 			
-			Defining terms:
+			List the 10 words whose presence most strongly predicts that the news is real:
 			
+			$\newline$
 			
-			Cost function for a single training case: C = - $\sum_{j} y_jlogp_j$
+			List the 10 words whose absence most strongly predicts that the news is real:
 			
-			$p_i = \frac{exp(o_i)}{\sum_{j} exp(o_j)}$
+			$\newline$
+			List the 10 words whose presence most strongly predicts that the news is fake:
 			
-			Compute the gradient descent: $\frac{\partial C }{\partial o_i}$ = $\sum_{j} \frac{\partial C }{\partial p_j} \frac{\partial p_j }{\partial o_i}$ = $p_i - y_i$
+			$\newline$
+			List the 10 words whose absence most strongly predicts that the news is fake:
 			
 			
 		\end{homeworkProblem}
@@ -261,76 +270,18 @@
 		\begin{homeworkProblem}[Part 3b]
 			\noindent \textit{Write vectorized code that computes the gradient of the cost function with respect to the weights and biases of the network}
 			$\newline$
-			\begin{lstlisting}
-    dCdW = np.dot(x, (p.T-t.T))
-    dCdb = p-t
-    delta = 1e-10
-    N = W.shape[0]
-    K = W.shape[1]
-    for times in range(0,6):
-        i = np.random.randint(N)
-        j = np.random.randint(K)
-        print times, ("gradient of dCdW:"), dCdW[i][j], "\n"
-        theta = np.copy(W)
-        theta[i][j] = theta[i][j] + delta
-        fd = (cost_function(x, theta, b, t)-cost_function(x, W, b, t))/delta
-        print times, ("finite difference of dCdW:"), fd, "\n"
-        print times, ("gradient of dCdb:"), dCdb[j][0], "\n"
-        theta = np.copy(b)
-        theta[j][0] = theta[j][0] + delta
-        fd = (cost_function(x, W, theta,t)-cost_function(x, W, b, t))/delta
-        print times,("finite difference of dCdb:"), fd, "\n"
-			\end{lstlisting}
-            Output:
-0 gradient of dCdW: 0.0 
-
-0 finite difference of dCdW: 0.0 
-
-0 gradient of dCdb: 0.0188239452014 
-
-0 finite difference of dCdb: 0.0188293824976 
-
-1 gradient of dCdW: 0.0 
-
-1 finite difference of dCdW: 0.0 
-
-1 gradient of dCdb: 0.0458990966574 
-
-1 finite difference of dCdb: 0.0459010607301 
-
-2 gradient of dCdW: 0.0 
-
-2 finite difference of dCdW: 0.0 
-
-2 gradient of dCdb: 0.00211207762373 
-
-2 finite difference of dCdb: 0.00211386463889 
-
-3 gradient of dCdW: 0.0291950090963 
-
-3 finite difference of dCdW: 0.0291944246555 
-
-3 gradient of dCdb: 0.0298985032914 
-
-3 finite difference of dCdb: 0.0299049673913 
-
-4 gradient of dCdW: 0.0 
-
-4 finite difference of dCdW: 0.0 
-
-4 gradient of dCdb: 0.0610826151789 
-
-4 finite difference of dCdb: 0.0610800299228 
-
-5 gradient of dCdW: 0.0 
-
-5 finite difference of dCdW: 0.0 
-
-5 gradient of dCdb: 0.0188239452014 
-
-5 finite difference of dCdb: 0.0188293824976 
-
-Results of finite difference and gradient calculation are relatively equal, only some rounding errors.
+			
+			10 non-stopwords that most strongly predict that the news is real:
+			
+			
+			
+			10 non-stopwords that most strongly predict that the news is fake:
+		\end{homeworkProblem}
+		
+		\begin{homeworkProblem}[Part 3b]
+			Why might it make sense to remove stop words when interpreting the model? Why might it make sense to keep stop words?
+			
+			
 		\end{homeworkProblem}
 		
 	\end{homeworkProblem}
@@ -342,72 +293,10 @@ Results of finite difference and gradient calculation are relatively equal, only
 	
 	\begin{homeworkProblem}[Part 4]
 		
-		\noindent \textit{Train the neural network using gradient descent (without momentum). Plot the learning curves. Display the weights going into each of the output units.}
+		\noindent \textit{Train a Logistic Regression model on the same dataset}
 		
 		$\newline$
-		Optimization procedure:
 		
-		We initialized the parameters as follows:
-			\begin{lstlisting}[language=Python, caption=Parameter Initialization]
-		# load weights and biases
-		snapshot = cPickle.load(open("snapshot50.pkl"))
-		W0 = snapshot["W0"]  # dimension = (748, 300)
-		b0 = snapshot["b0"].reshape((300, 1))
-		W1 = snapshot["W1"]  # dimension = (300, 10)
-		b1 = snapshot["b1"].reshape((10, 1))
-		v_w = 0  # for momentum
-		v_b = 0
-		
-		# initiate weights, bias and alpha
-		w0b0 = dot(W0, b0)  # dimension = (748, 1)
-		w1b1 = dot(W1, b1)  # dimension = (300, 1)
-		initial_weight = dot(W0, W1)  # (748, 10)
-		initial_bias = (dot(W1.T, b0)) + b1  # (10, 1)
-		print "initial bias shape", ((dot(W1.T, b0)) + b1).shape[0], ((dot(W1.T, b0)) + b1).shape[1]
-		alpha = 1e-5  # learning rate
-		
-		# get train and test performance based on increased epochs
-		epoch, train_performance, test_performance = [], [], []
-		EPS = 1e-10
-		prev_w = initial_weight - 10 * EPS
-		prev_b = initial_bias - 10 * EPS
-		W = initial_weight.copy()
-		b = initial_bias.copy()
-		iteration = 0
-		max_iteration = 2000
-		\end{lstlisting}
-		
-		We initialized the weight to be the dot product of W0 and W1. 
-		We repeatedly experimented with different alpha values and observe the results. We first set alpha=0.001. The percentage of correctness turned out to be very low (with 25\% of correcteness).  Then we decreased the learning rate to 0.00001. The correctness percentage then improved to 89\%. 
-		
-		$\newline$
-		Gradient descent procedure:
-		
-		\begin{lstlisting}[language=Python, caption=Parameter Initialization]
-		# apply gradient descent
-		while norm(W - prev_w) > EPS and norm(b - prev_b) > EPS and iteration < max_iteration:
-			prev_w = W.copy()
-			prev_b = b.copy()
-			W -= alpha * df_w(train_set.T, W, b, train_label.T)
-			b -= alpha * df_b(train_set.T, W, b, train_label.T)
-			if iteration % 100 == 0:
-				epoch.append(iteration)
-				train_performance.append(performance(train_set.T, W, b, train_label.T))
-				test_performance.append(performance(test_set.T, W, b, test_label.T))
-			iteration += 1
-		\end{lstlisting}
-		
-		\clearpage
-		Display the weights:
-
-
-		$\newline$
-		\clearpage
-		
-		Learning curve is shown in the figure below:
-		$\newline$
-		
-
 		
 	
 		

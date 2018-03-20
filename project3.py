@@ -4,8 +4,9 @@ import math
 import numpy as np
 
 
-# from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
+# print(ENGLISH_STOP_WORDS)
 
 def get_data_as_list(filename):
     """
@@ -57,10 +58,15 @@ def build_training_validation_test_set():
             line.append([word, 0])
         total_dataset.append(line)
 
-    # for headline in total_dataset:
-    #     if
-    #     total_dataset_label.append()
-    # print(dataset)
+    # part 3  can comment this section out if not running part 3 to get faster answer
+    for i in range(len(total_dataset)):
+        part3_dataset_label.append(total_dataset[i][0][1])
+        headline = []
+        for x in range(len(total_dataset[i])):
+            headline.append(total_dataset[i][x][0])
+        part3_dataset.append(headline)
+    # part 3 end -----
+
     random.seed(4)
     random.shuffle(total_dataset)
 
@@ -155,8 +161,8 @@ def tune_parameters():
     for m in m_array:
         for p_hat in p_hat_array:
             print("m, p_hat = " + str(m) + " " + str(p_hat))
-            likelihood_table = get_likehood_table(m, p_hat, validation_set)
-            current_performance = performance(likelihood_table, validation_set)
+            likelihood_table = get_likehood_table(m, p_hat, validation_set, validation_label)
+            current_performance = performance(likelihood_table, validation_set, validation_label)
             if current_performance > best_performance:
                 best_m = m
                 best_p_hat = p_hat
@@ -239,6 +245,8 @@ def get_number_of_word_occurrences_table(real_or_fake, dataset, dataset_label):
 def get_likehood_table(m, p_hat, dataset, dataset_label):
     """
     Get a likelihood table where keys are words, and value is the list of likelihood probabilities for real and fake
+
+    return dict format:  { 'word1', [likelihood_real, likelihood_fake], 'word2', [likelihood_real, likelihood_fake]}
     """
     total_real_num = get_total_word("real", dataset, dataset_label)
     total_fake_num = get_total_word("fake", dataset, dataset_label)
@@ -273,7 +281,7 @@ def get_likehood_table(m, p_hat, dataset, dataset_label):
 
 def predict_headline(likelihood_table, headline, dataset, dataset_label, part3=False):
     """
-    Return 1 if predicting the headline as real news, and 0 if predicting the headline as fake news
+    Return "real" if predicting the headline as real news, and "fake" if predicting the headline as fake news
     """
     likelihood_headline_real = 0
     likelihood_headline_fake = 0
@@ -289,11 +297,12 @@ def predict_headline(likelihood_table, headline, dataset, dataset_label, part3=F
     real_prior_prob = get_prior("real", dataset, dataset_label)
     fake_prior_prob = get_prior("fake", dataset, dataset_label)
 
-    likelihood_headline_real += math.log(real_prior_prob)
-    likelihood_headline_fake += math.log(fake_prior_prob)
+    # get posterior probability
+    posterior_headline_real = likelihood_headline_real + math.log(real_prior_prob)
+    posterior_headline_fake = likelihood_headline_fake + math.log(fake_prior_prob)
     # print(likelihood_headline_real, likelihood_headline_fake)
 
-    if likelihood_headline_real >= likelihood_headline_fake:
+    if posterior_headline_real >= posterior_headline_fake:
         # print("correct")
         return "real"
     else:
@@ -329,7 +338,7 @@ def performance(likelihood_table, dataset, dataset_label):
             correct += 1
     # print(correct)
     # print(len(training_set))
-    print(str(float(correct) / len(dataset) * 100) + "%")
+    # print(str(float(correct) / len(dataset) * 100) + "%")
     return (float(correct) / len(dataset)) * 100
 
 
@@ -343,84 +352,86 @@ p_hat = 10.0
 # print("p_hat = " + str(p_hat))
 
 
-def part3():
-    presence_strongly_predicts_real = []
-    absence_strongly_predict_real = []
+def part3a():
+    # presence strongly predicts real
+    get_strongly_predict("presence", "real", part3_dataset, part3_dataset_label)
 
-    presence_strongly_predicts_fake = []
-    absence_strongly_predict_fake = []
+    # absence strongly predicts real
+    get_strongly_predict("absence", "real", part3_dataset, part3_dataset_label)
 
-    print("presence_strongly_predicts_real: ", presence_strongly_predicts_real)
-    print("absence_strongly_predict_real: ", absence_strongly_predict_real)
-    print("presence_strongly_predicts_fake", presence_strongly_predicts_fake)
-    print("absence_strongly_predict_fake", absence_strongly_predict_fake)
+    # presence strongly predicts fake
+    get_strongly_predict("presence", "fake", part3_dataset, part3_dataset_label)
+
+    # absence strongly predicts fake
+    get_strongly_predict("absence", "fake", part3_dataset, part3_dataset_label)
 
 
-def get_strongly_predict(presence_or_absence, real_or_fake, dataset_label):
-    words_likelihood_table = get_likehood_table(m, p_hat, total_dataset, dataset_label)
+def part3b():
+    ONLY_NON_STOP_WORDS = True
+    get_strongly_predict("presence", "real", part3_dataset, part3_dataset_label, ONLY_NON_STOP_WORDS)
+    get_strongly_predict("presence", "fake", part3_dataset, part3_dataset_label, ONLY_NON_STOP_WORDS)
+
+
+def get_strongly_predict(presence_or_absence, real_or_fake, dataset, dataset_label, only_non_stop_words=False):
+    words_likelihood_table = get_likehood_table(m, p_hat, dataset, dataset_label)
+
     # if presence_or_absence == "presence":
-    #     presence_predict_likelihood_table = get_likehood_table(m, p_hat, total_dataset)
-    #
-    #     presence_strongly_predicts_real = [[word, likelihood]]
-    if presence_or_absence == "presence":
+        # p(real | presence)
+
+    prediction_based_on_presence = {}
+
+    for word in words_likelihood_table:
+        if presence_or_absence == "absence":
+            words_likelihood_table[word][0] = 1 - words_likelihood_table[word][0]
+            words_likelihood_table[word][1] = 1 - words_likelihood_table[word][1]
+
+        words_likelihood_table[word][0] += get_prior("real", dataset, dataset_label)
+        words_likelihood_table[word][1] += get_prior("fake", dataset, dataset_label)
+
         if real_or_fake == "real":
-            for word in words_likelihood_table:
-                words_likelihood_table[word][0] *= get_prior("real", total_dataset, dataset_label)
-                words_likelihood_table[word][1] *= get_prior("fake", total_dataset, dataset_label)
+            how_strong = words_likelihood_table[word][0] - words_likelihood_table[word][1]
+            prediction_based_on_presence[word] = how_strong
 
-            presence_strongly_predicts_real = sorted(words_likelihood_table.items(), key=operator.itemgetter(1))[:10]
+        if real_or_fake == "fake":
+            how_strong = words_likelihood_table[word][1] - words_likelihood_table[word][0]
+            prediction_based_on_presence[word] = how_strong
 
-            for key in presence_strongly_predicts_real:
-                print(key, presence_strongly_predicts_real[key])
+    # only get non-stop words
+    if only_non_stop_words:
+        for word in prediction_based_on_presence:
+            if prediction_based_on_presence[word] in ENGLISH_STOP_WORDS:
+                prediction_based_on_presence[word] = -10000000
+    presence_strongly_predicts_real = sorted(prediction_based_on_presence.items(), key=operator.itemgetter(1))[-10:]
+    # debug
 
+    print(presence_or_absence + " strongly predicts " + real_or_fake)
+    for items in presence_strongly_predicts_real:
+        print(items[0], items[1])
 
-# def part7():
-#     # train = train_matrix
-#     # valid = #valid_matrix
-#     # test = #test_matrix
-#
-#     # train_y = #train_label vector
-#     # valid_y = #valid_label vector
-#     # test_y = #test_label vector
-#
-#     depths = range(0, 1000, 100)
-#     train_output = []
-#     valid_output = []
-#     test_output = []
-#
-#     for depth in depths:
-#         clf = tree.DecisionTreeClassifier(max_depth=depth)
-#         clf = clf.fit(train, train_y)
-#
-#         dot_data = tree.export_graphviz(clf, max_depth=2, out_file=None, feature_names=words)
-#         export_graphviz(clf, max_depth=2, out_file=dot_data, filled=True, rounded=True,
-#                         special_characters=True)
-#
-#         ave = np.mean(clf.predict(train) == train_y)
-#         train_output.append(avg)
-#
-#         ave = np.mean(clf.predict(valid) == valid_y)
-#         valid_output.append(avg)
-#
-#         ave = np.mean(clf.predict(test) == test_y)
-#         test_output.append(ave)
-#
-#     plot1, = plt.plot(depths, train_output, label='training set')
-#     plot2, = plt.plot(depths, valid_output, label='validation set')
-#     plot3, = plt.plot(depths, test_output, label='test set')
-#
-#     plt.legend([plot1, plot2, plot3], ['Training', 'Validation', 'Test'])
-#     plt.title('Depths and performances')
-#     plt.xlabel('Max depth')
-#     plt.ylabel('Performance')
-#     plt.show()
+    return presence_strongly_predicts_real
 
 
 if __name__ == "__main__":
     # part1()
-    part2()
-    # part3()
+    # part2()
+    # part3a()
     # part4()
     # tune_parameters()
     # dataset_label = []
-    # get_strongly_predict("presence", "real", dataset_label)
+    # get_strongly_predict("presence", "real", part3_dataset, part3_dataset_label)
+
+    presence_strongly_predicts_real = get_strongly_predict("presence", "real", part3_dataset, part3_dataset_label)
+    print("presence_strongly_predicts_real: ")
+    print(presence_strongly_predicts_real)
+
+    absence_strongly_predict_real = get_strongly_predict("absence", "real", part3_dataset, part3_dataset_label)
+    print("absence_strongly_predict_real: ")
+    print(absence_strongly_predict_real)
+
+    presence_strongly_predicts_fake = get_strongly_predict("presence", "fake", part3_dataset, part3_dataset_label)
+    print("presence_strongly_predicts_fake")
+    print(presence_strongly_predicts_fake)
+
+    absence_strongly_predict_fake = get_strongly_predict("absence", "fake", part3_dataset, part3_dataset_label)
+    print("absence_strongly_predict_fake")
+    print(absence_strongly_predict_fake)
