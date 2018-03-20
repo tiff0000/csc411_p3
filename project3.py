@@ -83,14 +83,9 @@ def build_training_validation_test_set():
             headline.append(dataset[i][x][0])
         test_set.append(headline)
 
-    # validation_set = [dataset[i][x][0] for i in range(validation_index, test_index) for x in range(len(dataset[i]))]
-    # test_set = [[dataset[i][x][0]] for i in range(validation_index, len(dataset) - 1) for x in range(len(dataset[i]))]
-    # print(test_set)
     training_label = [dataset[i][0][1] for i in range(validation_index)]
     validation_label = [dataset[i][0][1] for i in range(validation_index, test_index)]
     test_label = [dataset[i][0][1] for i in range(validation_index, len(dataset) - 1)]
-    # print(len(test_set))
-    # print(len(test_label))
 
     return training_set, validation_set, test_set, training_label, validation_label, test_label
 
@@ -133,10 +128,8 @@ def get_frequent_occurences(input):
     Get top 10 word occurences from input.
     """
     data = get_word_stats(input)
-
-    # print(sorted(data.iteritems(), key=lambda (k, v): (v, k))[:])
-
     frequent_words = []
+
     for i in range(15):
         highest_frequency_word = max(data.iteritems(), key=operator.itemgetter(1))
         frequent_words.append(highest_frequency_word)
@@ -144,57 +137,48 @@ def get_frequent_occurences(input):
     return frequent_words
 
 
+def tune_parameters():
+    """
+    Tune the parameters m and p_hat to get best performance
+    """
+    m_array = np.array([1.0, 1e1, 1e2, 1e3, 1e4])
+    p_hat_array = np.array([0.9, 3e-1, 1e-1, 3e-2, 1e-2, 3e-3])
+
+    best_performance = 0
+    best_m = 0
+    best_p_hat = 0
+    for m in m_array:
+        for p_hat in p_hat_array:
+            print("m, p_hat = " + str(m) + " " + str(p_hat))
+            likelihood_table = get_likehood_table(m, p_hat, validation_set)
+            current_performance = performance(likelihood_table, validation_set)
+            if current_performance > best_performance:
+                best_m = m
+                best_p_hat = p_hat
+    return [best_m, best_p_hat]
+
+
 def part2():
     """
-    Get the probability of a headline being fake or real using naive bayes approach
-    Steps:
-    1. Make a table of word occurrences
-
-    example:
-    Word   real  fake
-    Trump  0,3   0.4
-
+    Use Naive Bayes to evaluate the performance accuracy
     """
-    # training_set, validation_set, test_set, training_label, validation_label, test_label = build_training_validation_test_set()
+    m = 1.0
+    p_hat = 10.0
 
-    # # validation performance
-    # for i in range(len(validation_set)):
-    #     if posterior_prob(validation_set[i], "real") >= 0.5 and validation_label[i] == 1:
-    #         val_correct += 1
-    #
-    # # training performance
-    # for i in range(len(training_set)):
-    #     if posterior_prob(training_set[i], "real") >= 0.5 and training_label[i] == 1:
-    #         train_correct += 1
-
-    # test performance
-
-    mI = np.array([1.0, 1e1, 1e2, 1e3, 1e4])
-    p_hatI = np.array([0.9, 3e-1, 1e-1, 3e-2, 1e-2, 3e-3])
-    countMin = -1.0
-    # for m in mI:
-    #     for p_hat in p_hatI:
-    #         count = likelihood_prob(validation_set, validation_label, m, p_hat)
-    #         if count > countMin:
-    #             countMin = count
-    #             mM = m
-    #             p_hatM = p_hat
-    likelihood_table = get_likehood_table(1.0, 10)
-    accuracy = performance(likelihood_table)
+    likelihood_table = get_likehood_table(m, p_hat, training_set)
+    accuracy = performance(likelihood_table, training_set)
     print("training set performance: " + str(accuracy) + "%")
 
-    # count = likelihood_prob(training_set, training_label, mM, p_hatM)
-    # # print("validation performance: ", val_correct)
-    # # print("training performance: ", train_correct)
-    # print("training set performance: ", count)
-    #
-    # count = likelihood_prob(test_set, test_label, mM, p_hatM)
-    # # print("validation performance: ", val_correct)
-    # # print("training performance: ", train_correct)
-    # print("test set performance: ", count)
+    likelihood_table = get_likehood_table(m, p_hat, validation_set)
+    accuracy = performance(likelihood_table, validation_set)
+    print("validation set performance: " + str(accuracy) + "%")
+
+    likelihood_table = get_likehood_table(m, p_hat, test_set)
+    accuracy = performance(likelihood_table, test_set)
+    print("test set performance: " + str(accuracy) + "%")
 
 
-def get_total_word(real_or_fake):
+def get_total_word(real_or_fake, dataset):
     """
     Return the total number of words in each of the real or fake dataset.
     Input: list of list (list of headlines and sublists of words in the headline)
@@ -202,9 +186,9 @@ def get_total_word(real_or_fake):
     total_real_words = 0
     total_fake_words = 0
 
-    for i in range(len(training_set)):
+    for i in range(len(dataset)):
         for word in training_set[i]:
-            # increment word occurences for real news
+            # increment word occurrences for real news
             if training_label[i] == 1:
                 total_real_words += 1
             if training_label[i] == 0:
@@ -216,17 +200,17 @@ def get_total_word(real_or_fake):
         return total_fake_words
 
 
-def get_number_of_word_occurrences_table(real_or_fake):
+def get_number_of_word_occurrences_table(real_or_fake, dataset):
     """
     Return a table (dict) containing the number of occurences for either real of fake news.
     The return structure: a dictionary. key = word, value = number of occurrences of that word
     """
-
     # make a table which contains the number of occurrences for each word in real and fake
     words_occurrences_real = {}
     words_occurrences_fake = {}
-    for i in range(len(training_set)):
-        for word in training_set[i]:
+
+    for i in range(len(dataset)):
+        for word in dataset[i]:
             # increment word occurences for real news
             if training_label[i] == 1:
                 if not (words_occurrences_real.has_key(word)):
@@ -245,15 +229,15 @@ def get_number_of_word_occurrences_table(real_or_fake):
         return words_occurrences_fake
 
 
-def get_likehood_table(m, p_hat):
+def get_likehood_table(m, p_hat, dataset):
     """
     Get a likelihood table where keys are words, and value is the list of likelihood probabilities for real and fake
     """
-    total_real_num = get_total_word("real")
-    total_fake_num = get_total_word("fake")
+    total_real_num = get_total_word("real", dataset)
+    total_fake_num = get_total_word("fake", dataset)
 
-    words_occurrences_real_table = get_number_of_word_occurrences_table("real")
-    words_occurrences_fake_table = get_number_of_word_occurrences_table("fake")
+    words_occurrences_real_table = get_number_of_word_occurrences_table("real", dataset)
+    words_occurrences_fake_table = get_number_of_word_occurrences_table("fake", dataset)
 
     # get the likelihood table ( e.g P(word_i | real), P(word_i | fake)) of each words in real and fake
     likelihood_dict = {}  # { 'word', [likelihood_real, likelihood_fake]}
@@ -280,7 +264,7 @@ def get_likehood_table(m, p_hat):
     return likelihood_dict
 
 
-def predict_headline(likelihood_table, headline):
+def predict_headline(likelihood_table, headline, dataset):
     """
     Return 1 if predicting the headline as real news, and 0 if predicting the headline as fake news
     """
@@ -295,27 +279,27 @@ def predict_headline(likelihood_table, headline):
             likelihood_headline_real += math.log(1 - likelihood_table[word][0])
             likelihood_headline_fake += math.log(1 - likelihood_table[word][1])
 
-    real_prior_prob = get_prior("real")
-    fake_prior_prob = get_prior("fake")
+    real_prior_prob = get_prior("real", dataset)
+    fake_prior_prob = get_prior("fake", dataset)
 
     likelihood_headline_real += math.log(real_prior_prob)
     likelihood_headline_fake += math.log(fake_prior_prob)
     # print(likelihood_headline_real, likelihood_headline_fake)
 
     if likelihood_headline_real >= likelihood_headline_fake:
-        print("correct")
+        # print("correct")
         return "real"
     else:
-        print("incorrect")
+        # print("incorrect")
         return "fake"
 
 
-def get_prior(real_or_fake):
+def get_prior(real_or_fake, dataset):
     """
     Return the prior probability of real or fake words
     """
-    real_words_num = get_total_word("real")
-    fake_words_num = get_total_word("fake")
+    real_words_num = get_total_word("real", dataset)
+    fake_words_num = get_total_word("fake", dataset)
     total_words = real_words_num + fake_words_num
 
     if real_or_fake == "real":
@@ -324,44 +308,49 @@ def get_prior(real_or_fake):
         return float(fake_words_num) / float(total_words)
 
 
-def performance(likelihood_table):
-
+def performance(likelihood_table, dataset):
+    """
+    Get the performance in percentage
+    (percentage = number of correct prediction / total headlines * 100)
+    """
     correct = 0
 
     for i in range(len(training_set)):
         headline = training_set[i]
-        if (predict_headline(likelihood_table, headline) == "real" and training_label[i] == 1) or\
-            (predict_headline(likelihood_table, headline) == "fake" and training_label[i] == 0):
+        if (predict_headline(likelihood_table, headline, dataset) == "real" and training_label[i] == 1) or\
+            (predict_headline(likelihood_table, headline, dataset) == "fake" and training_label[i] == 0):
             correct += 1
-    print(correct)
-    print(len(training_set))
+    # print(correct)
+    # print(len(training_set))
+    print(str(float(correct) / len(training_set) * 100) + "%")
     return (float(correct) / len(training_set)) * 100
+
+
+best_parameters = tune_parameters()
+m = best_parameters[0]
+p_hat = best_parameters[1]
+
+print("m = " + str(m))
+print("p_hat = " + str(p_hat))
+
+
+def part3():
+    presence_strongly_predicts_real = []
+    absence_strongly_predict_real = []
+
+    presence_strongly_predicts_fake = []
+    absence_strongly_predict_fake = []
+
+    print("presence_strongly_predicts_real: ", presence_strongly_predicts_real)
+    print("absence_strongly_predict_real: ", absence_strongly_predict_real)
+    print("presence_strongly_predicts_fake", presence_strongly_predicts_fake)
+    print("absence_strongly_predict_fake", absence_strongly_predict_fake)
 
 
 
 if __name__ == "__main__":
-    # print top 10 occurences from each real and fake news
     # part1()
-    part2()
+    # part2()
     # part3()
     # part4()
-    # get_likelikehood_table("real")
-    # print(get_likehood_table("real"))
-    # print(likelihood_prob(training_set[0], "real"))
-    # print get_word_num("real")
-    # print get_word_num("fake")
-
-    # likelihood_table = get_likehood_table(1.0, 0.9)
-    #trump warns of vote flipping on machines
-    #donald trump do you remember the year since he was elected
-    # result = predict_headline(likelihood_table, ['trump', 'warns', 'of', 'vote', 'flipping', 'on', 'machine'], False)
-    # print(result)
-    # result = predict_headline(likelihood_table, ['trump', 'warns', 'of', 'vote', 'flipping', 'on', 'machine'], True)
-    # print(result)
-    # result = predict_headline(likelihood_table, ['donal', 'trump', 'do', 'you', 'remember', 'the', 'year', 'since', 'he', 'was', 'elected'], True)
-    # print(result)
-    # print(get_prior("real"))
-    # print(get_prior("fake"))
-
-    # performance(likelihood_table)
-
+    tune_parameters()
