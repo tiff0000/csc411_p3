@@ -154,7 +154,7 @@ def tune_parameters():
     Tune the parameters m and p_hat to get best performance
     """
     m_array = np.array([0.48, 0.49, 0.5, 0.51, 0.52])
-    p_hat_array = np.array([10.0])
+    p_hat_array = np.array([0.1])
 
     best_performance = 0
     best_m = 0
@@ -175,7 +175,7 @@ def part2():
     Use Naive Bayes to evaluate the performance accuracy
     """
     m = 0.5
-    p_hat = 10.0
+    p_hat = 0.1
     # m = 0.1
     # p_hat = 10
 
@@ -192,26 +192,25 @@ def part2():
     print("test set performance: " + str(accuracy) + "%")
 
 
-def get_total_word(real_or_fake, dataset, dataset_label):
+def get_total_headlines(real_or_fake, dataset, dataset_label):
     """
     Return the total number of words in each of the real or fake dataset.
     Input: list of list (list of headlines and sublists of words in the headline)
     """
-    total_real_words = 0
-    total_fake_words = 0
+    total_real_headlines = 0
+    total_fake_healines = 0
 
     for i in range(len(dataset)):
         for word in dataset[i]:
-            # increment word occurrences for real news
             if dataset_label[i] == 1:
-                total_real_words += 1
+                total_real_headlines += 1
             if dataset_label[i] == 0:
-                total_fake_words += 1
+                total_fake_healines += 1
 
     if real_or_fake == "real":
-        return total_real_words
+        return total_real_headlines
     else:
-        return total_fake_words
+        return total_fake_healines
 
 
 def get_number_of_word_occurrences_table(real_or_fake, dataset, dataset_label):
@@ -224,7 +223,8 @@ def get_number_of_word_occurrences_table(real_or_fake, dataset, dataset_label):
     words_occurrences_fake = {}
 
     for i in range(len(dataset)):
-        for word in dataset[i]:
+        headline_without_duplicates = list(set(dataset[i]))
+        for word in headline_without_duplicates:
             # increment word occurences for real news
             if dataset_label[i] == 1:
                 if not (words_occurrences_real.has_key(word)):
@@ -249,11 +249,17 @@ def get_likehood_table(m, p_hat, dataset, dataset_label):
 
     return dict format:  { 'word1', [likelihood_real, likelihood_fake], 'word2', [likelihood_real, likelihood_fake]}
     """
-    total_real_num = get_total_word("real", dataset, dataset_label)
-    total_fake_num = get_total_word("fake", dataset, dataset_label)
+    total_real_num = get_total_headlines("real", dataset, dataset_label)
+    total_fake_num = get_total_headlines("fake", dataset, dataset_label)
 
     words_occurrences_real_table = get_number_of_word_occurrences_table("real", dataset, dataset_label)
     words_occurrences_fake_table = get_number_of_word_occurrences_table("fake", dataset, dataset_label)
+
+    for key in words_occurrences_fake_table:
+        if (words_occurrences_fake_table[key] / total_fake_num) >= 1:
+            print(words_occurrences_fake_table[key])
+            print(total_fake_num)
+            print (key, words_occurrences_fake_table[key])
 
     # get the likelihood table ( e.g P(word_i | real), P(word_i | fake)) of each words in real and fake
     likelihood_dict = {}  # { 'word', [likelihood_real, likelihood_fake]}
@@ -288,6 +294,8 @@ def predict_headline(likelihood_table, headline, dataset, dataset_label, part3=F
     likelihood_headline_fake = 0
 
     for word in likelihood_table:
+        if likelihood_table[word][1] >= 1:
+            print(likelihood_table[word][1])
         if word in headline:
             likelihood_headline_real += math.log(likelihood_table[word][0])
             likelihood_headline_fake += math.log(likelihood_table[word][1])
@@ -315,14 +323,15 @@ def get_prior(real_or_fake, dataset, dataset_label):
     """
     Return the prior probability of real or fake words
     """
-    real_words_num = get_total_word("real", dataset, dataset_label)
-    fake_words_num = get_total_word("fake", dataset, dataset_label)
-    total_words = real_words_num + fake_words_num
+    real_healines_num = get_total_headlines("real", dataset, dataset_label)
+    fake_healines_num = get_total_headlines("fake", dataset, dataset_label)
+
+    total_headlines = real_healines_num + fake_healines_num
 
     if real_or_fake == "real":
-        return float(real_words_num) / float(total_words)
+        return float(real_healines_num) / float(total_headlines)
     else:
-        return float(fake_words_num) / float(total_words)
+        return float(fake_healines_num) / float(total_headlines)
 
 
 def performance(likelihood_table, dataset, dataset_label):
@@ -347,7 +356,7 @@ def performance(likelihood_table, dataset, dataset_label):
 # m = best_parameters[0]
 # p_hat = best_parameters[1]
 m = 0.5
-p_hat = 10.0
+p_hat = 0.1
 
 # print("m = " + str(m))
 # print("p_hat = " + str(p_hat))
@@ -372,6 +381,8 @@ def part3b():
     get_strongly_predict("presence", "real", part3_dataset, part3_dataset_label, ONLY_NON_STOP_WORDS)
     get_strongly_predict("presence", "fake", part3_dataset, part3_dataset_label, ONLY_NON_STOP_WORDS)
 
+
+# debug 3
 
 def get_strongly_predict(presence_or_absence, real_or_fake, dataset, dataset_label, only_non_stop_words=False):
     words_likelihood_table = get_likehood_table(m, p_hat, dataset, dataset_label)
@@ -403,7 +414,6 @@ def get_strongly_predict(presence_or_absence, real_or_fake, dataset, dataset_lab
             if prediction_based_on_presence[word] in ENGLISH_STOP_WORDS:
                 prediction_based_on_presence[word] = -10000000
     presence_strongly_predicts_real = sorted(prediction_based_on_presence.items(), key=operator.itemgetter(1))[-10:]
-    # debug
 
     print(presence_or_absence + " strongly predicts " + real_or_fake)
     for items in presence_strongly_predicts_real:
@@ -411,19 +421,36 @@ def get_strongly_predict(presence_or_absence, real_or_fake, dataset, dataset_lab
 
     return presence_strongly_predicts_real
 
-def part4():
+# def part4():
 
 
 if __name__ == "__main__":
     # part1()
     # part2()
-    # part3a()
+    part3a()
     # part3b()
     # part4()
     # part5()
     # part6()
     # part7()
     # part8():
+    # print(len(training_set))
+    # print(len(training_label))
+    # count = 0
+    # for i in range(len(training_set)):
+    #     for word in training_set[i]:
+    #         if word == "trump" and training_label[i] == 0:
+    #             count += 1
+    # print(count)
+    #
+    # # print(get_total_headlines("fake", training_set, training_label))
+    #
+    # total_fake_healines =
+    # table = get_likehood_table(m, p_hat, training_set, training_label)
+    #
+    # for key in table:
+    #     if (table[key][1] >= 1):
+    #         print(key, table[key])
     # tune_parameters()
     # dataset_label = []
     # get_strongly_predict("presence", "real", part3_dataset, part3_dataset_label)

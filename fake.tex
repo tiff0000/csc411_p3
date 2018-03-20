@@ -219,16 +219,46 @@
 		
 		$\newline$
 		Implementation details:
+		We used naive bayes probability to predict whether a headline is real or fake.
+		For each of the headline, we used naive bayes to calculate P(real $\mid$ headline) and P(fake $\mid$ headline) and compare which one has greater probability. For example, if P(real $\mid$ headline) $>$ P(fake $\mid$ headline), then we predict it to be real. We check if the prediction is correct using the corresponding label. We count the number of correct predictions for all headlines and divide it by the total number of headlines in each of training\_set, validation\_set and test\_test to get the performance.
+		
+		In particular, we used the formula:
+		
+		P(real $\mid$ headline)  = likelihood\_probability(headline) * prior\_probability(real)
+		
+		P(fake $\mid$ headline) = likelihood\_probability(headline) * prior\_probability(fake)
+		
+		Step 1: Calculate the likelihood of a headline.
+		
+		(similar way for getting likelihood for fake news headline)
+		
+		Step 1.1 We first calculate the total number of words that are in real and fake news in the dataset. 
+		
+		Step 1.2 We then maintained a table of real and fake words and its counts. (in python dictionary) For each word in the dataset, we store the word as key and P(word $\mid$ real) and P(word $\mid$ fake) as a list of value of the word.
+		
+		P(word $\mid$ c) = (count(word, c) + m * p\_hat) / (count(c) + m) , c = real or fake
+		
+		m and p\_hat are the parameters that we will tune with validation set to get best performance.
 		
 		We used validation set to tune the parameters m and p
 		
+		Step 1.3 Calculate likelihood of the healine. We do so by adding log(p(word $\mid$ c)) if word appears in the headline, log(1 - p(word $\mid$ c)) if words doesn't appear in the headline, for each of the words in the table. This sum is the likelihood of the headline.
+		
+		Step 2: Calculate prior probability of real or fake. 
+		
+		P(real) = total number of real words / 
 		
 		
-		We used the following formula to get the probability of a headline to be real or fake. 
 		
-		P(real $\mid$ headline) =  P(headline\_word\_1 $\mid$ real) * P(headline\_word\_2 $\mid$ real) * ... * P(headline\_word\_n $\mid$ real)   * P(real)
+		headline = [word\_1, word\_2, word\_3...word\_n]
 		
+		We used this formula: 
 		
+		likelihood\_probability\_headline 
+		
+		= P(word\_1 $\mid$ real) * P(word\_2 $\mid$ real) * P(word\_3 $\mid$ real)  * ... * P(word\_n $\mid$ real)
+		
+		= log(P(word\_1 $\mid$ real)) + log(P(word\_2 $\mid$ real)) + log(P(word\_3 $\mid$ real)) ... + log(P(word\_n $\mid$ real)) 
 		
 		\begin{lstlisting}[language=Python, caption=Compute network function]
 		
@@ -316,19 +346,7 @@
 		
 		\noindent \textit{Write vectorized code that performs gradient descent with momentum, and use it to train your network. Plot the learning curves}
 		
-		Learning curve with momentum:l
-
-
-		How new learning curves compare with gradient descent without momentum: 
-		Without the momentum, the performance of correct guesses increased slower than if momentum were used. For example, as we can observe in the learning curve, the performance of training set only increased to 92\% after 800 iterations, wheareas with momentum term set to 0.99, the performance correcnesses increased to the same percentage by only using 400 iterations, because it moved faster when gradient consistenly points to one direction.
 		
-		$\newline$
-				
-		Code added in the gradient descent:
-		
-		In the train\_neural\_network method, method signature was modified to take two 
-		extra terms: type and momemtum term. The rest of code remains unchanged 
-		as in part 4.
 		\clearpage
 		
 		\begin{lstlisting}[language=Python, caption= Gradient descent with momentum]
