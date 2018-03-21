@@ -185,34 +185,55 @@
 		\noindent \textit{Dataset description}
 		$\newline$
 		
-		We collected the top 10 word occurences from each of real and fake news data files.
-		The result is show below:
+		Describe the datasets.
 		
-		Real:
+		The dataset consists of healines of real news and headlines of fake news, each stored in a separate file. All headlines' punctuations and apostrophes are removed so that it only contain clean words.\\
 		
-		[('trump', 1744), ('donald', 829), ('to', 413), ('us', 230), ('trumps', 219), ('in', 214), ('on', 205),
-		('of', 186), ('says', 178), ('for', 174), ('the', 173), ('and', 116), ('with', 104), ('a', 93),
-		('election', 87)]
+		We have a dataset of 3266 headlines
 		
-		Fake:
+		real news headlines: 1968
 		
-		[('trump', 1328), ('the', 439), ('to', 409), ('in', 231), ('donald', 228), ('of', 212), ('for', 205),
-		('a', 192), ('and', 180), ('on', 166), ('is', 157), ('hillary', 150), ('clinton', 132), ('with', 100),
-		('will', 96)]
+		fake news headlines: 1298\\
 		
-		Example of 3 useful keywords are trump, donald, and hillary
+		3 examples of words that may be useful\\
+		
+		We collected words that appear frequently in real and not frequently in fake news, and vice versa, since if a word appears frequently in a one and not frequent in the other, then the word is will strongly predict the headline. Among the results, we selected words that are meaningful (we didn't select words that are english grammar words, like "the", "and" , etc.)\\
+		
+		examples of words:
+		
+		word that appears frequent in real, and less frequent in fake: ['criticism', 10, 1]
+		
+		words that appear frequent in fake, and less frequent in real: 
+		['reporter', 15, 1]  
+		['liberty', 12, 1]\\
+		
+		Test scripts of the project:
+		
+		For the following problems, test scripts are run simply by uncommenting out the part \# in the $main()$ function.
+		
+			\begin{lstlisting}[language=Python, caption=Test scripts]		
+			
+			if __name__ == "__main__":
+				# part1()
+				# part2()
+				# part3a()
+				# part3b()
+				# part4()
+				# part5()
+				# part6()
+				# part7()
+				# part8()
+			\end{lstlisting}
 		
 		$\newline$
 
-		
-		
 	\end{homeworkProblem}
 	\clearpage
 	%----------------------------------------------------------------------------------------
 	%	PROBLEM 2
 	%----------------------------------------------------------------------------------------
 	
-	\begin{homeworkProblem}[ Part 2]
+	\begin{homeworkProblem}[Part 2]
 		
 		\noindent \textit{Problem: Implement the Naive Bayes algorithm for predicting whether a headline is real or fake. }
 		
@@ -220,7 +241,7 @@
 		$\newline$
 		Implementation details:
 		We used naive bayes probability to predict whether a headline is real or fake.
-		For each of the headline, we used naive bayes to calculate P(real $\mid$ headline) and P(fake $\mid$ headline) and compare which one has greater probability. For example, if P(real $\mid$ headline) $>$ P(fake $\mid$ headline), then we predict it to be real. We check if the prediction is correct using the corresponding label. We count the number of correct predictions for all headlines and divide it by the total number of headlines in each of training\_set, validation\_set and test\_test to get the performance.
+		For each of the headline, we used naive bayes to calculate P(real $\mid$ headline) and P(fake $\mid$ headline) and compare which one has greater probability. For example, if P(real $\mid$ headline) $>$ P(fake $\mid$ headline), then we predict it to be real. We check if the prediction is correct using the corresponding label. We count the number of correct predictions for all headlines and divide it by the total number of headlines in each of training\_set, validation\_set and test\_test to get the performance.\\
 		
 		In particular, we used the formula:
 		
@@ -228,13 +249,19 @@
 		
 		P(fake $\mid$ headline) = likelihood\_probability(headline) * prior\_probability(fake)
 		
-		Step 1: Calculate the likelihood of a headline.
 		
-		(similar way for getting likelihood for fake news headline)
 		
-		Step 1.1 We first calculate the total number of words that are in real and fake news in the dataset. 
+		= P(real $\mid$ headline)  = $\sum log(P(w_i | real)) $+  log(prior\_probability(real))
 		
-		Step 1.2 We then maintained a table of real and fake words and its counts. (in python dictionary) For each word in the dataset, we store the word as key and P(word $\mid$ real) and P(word $\mid$ fake) as a list of value of the word.
+		= P(fake $\mid$ headline)  = $\sum log(P(w_i | fake)) $+  log(prior\_probability(fake)) \\
+		
+		\textbf{Step 1} : Calculate the likelihood of a headline.
+		
+		(similar way for getting likelihood for fake news headline)\\
+		
+		\textbf{Step 1.1} We first calculate the total number of words that are in real and fake news in the dataset. \\
+		
+		\textbf{Step 1.2} We then maintained a table of real and fake words and its counts. (in python dictionary) For each word in the dataset, we store the word as key and P(word $\mid$ real) and P(word $\mid$ fake) as a list of value of the word.
 		
 		P(word $\mid$ c) = (count(word, c) + m * p\_hat) / (count(c) + m) , c = real or fake
 		
@@ -242,27 +269,81 @@
 		
 		We used validation set to tune the parameters m and p
 		
-		Step 1.3 Calculate likelihood of the healine. We do so by adding log(p(word $\mid$ c)) if word appears in the headline, log(1 - p(word $\mid$ c)) if words doesn't appear in the headline, for each of the words in the table. This sum is the likelihood of the headline.
+				Table of probability for each word  (P(w $\mid$ real), P(w $\mid$ fake))
+				
+	\begin{lstlisting}[language=Python, caption=Make a table of probability for each word]		
+	probability_dict = {}
+	for word in probability_dict:
+		# get real words probability
+		if word in words_occurrences_real_table:
+			real_word_likelihood = float(words_occurrences_real_table[word] + m * p_hat) /
+			 float(total_real_healines + m)
+		else:
+			real_word_likelihood = float(m * p_hat) / float(total_real_healines + m)
+			probability_dict[word] = [real_word_likelihood]
+		# get fake words probability
+		if word in words_occurrences_fake_table:
+			fake_word_likelihood = float(words_occurrences_fake_table[word] + m * p_hat) /
+			 float(total_fake_healines + m)
+		else:
+			fake_word_likelihood = float(m * p_hat) / float(total_fake_healines + m)
+			probability_dict[word].append(fake_word_likelihood)
+	\end{lstlisting}
 		
-		Step 2: Calculate prior probability of real or fake. 
+	
+		$\newline$
+		Step 1.3 Calculate likelihood of the healine. We do so by adding log(p(word $\mid$ c)) if word appears in the headline, log(1 - p(word $\mid$ c)) if words doesn't appear in the headline, for each of the words in the table. This sum is the likelihood of the headline. We will called this likelihood\_headline
+		\begin{lstlisting}[language=Python, caption=Calculate likelihood for a headline]	
+		likelihood_headline_real = 0
+		likelihood_headline_fake = 0
 		
-		P(real) = total number of real words / 
-		
-		
-		
-		headline = [word\_1, word\_2, word\_3...word\_n]
-		
-		We used this formula: 
-		
-		likelihood\_probability\_headline 
-		
-		= P(word\_1 $\mid$ real) * P(word\_2 $\mid$ real) * P(word\_3 $\mid$ real)  * ... * P(word\_n $\mid$ real)
-		
-		= log(P(word\_1 $\mid$ real)) + log(P(word\_2 $\mid$ real)) + log(P(word\_3 $\mid$ real)) ... + log(P(word\_n $\mid$ real)) 
-		
-		\begin{lstlisting}[language=Python, caption=Compute network function]
-		
+		for word in likelihood_table:
+			if word in headline:
+				likelihood_headline_real += math.log(likelihood_table[word][0])
+				likelihood_headline_fake += math.log(likelihood_table[word][1])
+			else:
+				likelihood_headline_real += math.log(1 - likelihood_table[word][0])
+				likelihood_headline_fake += math.log(1 - likelihood_table[word][1])
 		\end{lstlisting}
+		
+		\textbf{Step 2}: Calculate prior probability of real or fake. 
+		
+		P(real) = total number of headlines real / total headlines
+		P(fake) = total number of headlines fake / total headlines\\
+		
+		\textbf{Step 3}: Calculate the posterior probability for a headline being real using likelihood\_headline + log(prior(real)). We do similar operation for calculating posterior probability for a headline being fake. \\
+		
+		\textbf{Step 4}: Count the accuracy. 
+		
+		We use the posterior probability for each headline being real or fake and compare which one is greater, and use the one that is greater to predict the whether a headline is real or fake. For example, if a headline's posterior probability for being real is greater than the posterior probability that of being fake, then we predict it is real. We iterate through all the headlines and check with the label of it. We increment correct guesses number if prediction is correct. \\
+\begin{lstlisting}[language=Python, caption=Calculate performance for a dataset]	
+	correct = 0
+	for i in range(len(dataset)):
+		headline = dataset[i]
+		if (predict_headline(likelihood_table, headline, dataset, dataset_label) == 
+		"real" and dataset_label[i] == 1) or\
+		(predict_headline(likelihood_table, headline, dataset, dataset_label) ==
+		 "fake" and dataset_label[i] == 0):
+		correct += 1
+	
+	return (float(correct) / len(dataset)) * 100
+\end{lstlisting}
+		\textbf{Step 5}: We tune the parameters m and p\_hat using validation set. 
+		
+		To do so, we tried with an array of numbers 
+		
+		m = [1.0, 0.5, 1e1,1e2,1e3,1e4] ,	p\_hat = [0.9,3e-1,1e-1,3e-2,1e-2,3e-3]
+		
+		After several tests and changing the values for p\_hat and m, we found out that m=0.5 and p\_hat = 0.1 are the best parameters. \\
+		
+		Results:
+		
+		training set performance: 97.8127734033\%
+		
+		validation set performance: 99.387755102\%
+		
+		test set performance: 98.0592441267\%
+
 		
 	\end{homeworkProblem}
 	\clearpage
@@ -274,25 +355,120 @@
 		
 		\begin{homeworkProblem}[Part 3a]
 			
-			How we obtained the words:
+			How we obtained the lists:
 			
+			We have maintaine a table of probabilities for each words (P(w $\mid$ real) and P(w $\mid$ fake). For each of the word, we calculate store its posterior probability bydoing:\\
 			
+			Presence predict real: 
+			P(real $\mid$ w) =  P(w $\mid$ real) + log(prior\_prob(real))
+			
+			Presence predict fake:
+			P(fake $\mid$ w) =  P(w $\mid$ fake) + log(prior\_prob(fake))
+			
+			Absence predict real:
+			P(real $\mid$ w) =  1 - P(w $\mid$ fake) + log(prior\_prob(real))
+			
+			Absence predict fake:
+			P(fake $\mid$ w) =  1 - P(w $\mid$ fake) + log(prior\_prob(fake))\\
+			
+			Then we iterate through the table to find the top 10 highest values.
 			
 			$\newline$
 			
 			List the 10 words whose presence most strongly predicts that the news is real:
+			('travel')
+			
+			('turnbull')
+			
+			('ban')
+			
+			('korea')
+			
+			('north')
+			
+			('says')
+			
+			('us')
+			
+			('trumps')
+			
+			('trump')
+			
+			('donald')
 			
 			$\newline$
 			
-			List the 10 words whose absence most strongly predicts that the news is real:
+			List the 10 words whose absence most strongly predicts that the news is real:	
+			
+			('if')
+			
+			('are')
+			
+			('you')
+			
+			('clinton')
+			
+			('and')
+			
+			('just')
+			
+			('is')
+			
+			('a')
+			
+			('hillary')
+			
+			('the')
 			
 			$\newline$
 			List the 10 words whose presence most strongly predicts that the news is fake:
 			
+			('if')
+			
+			('are')
+			
+			('you')
+			
+			('clinton')
+			
+			('and')
+			
+			('just')
+			
+			('is')
+			
+			('a')
+			
+			('hillary')
+			
+			('the')
+			
 			$\newline$
 			List the 10 words whose absence most strongly predicts that the news is fake:
 			
+			('travel')
+			
+			('turnbull')
+			
+			('ban')
+			
+			('korea')
+			
+			('north')
+			
+			('says')
+			
+			('us')
+			
+			('trumps')
+			
+			('trump')
+			
+			('donald')
+			
+			$\newline$
 			Compare the influence of presence vs absence of words on predicting whether the headline is real or fake news.
+			
 			
 			
 		\end{homeworkProblem}
@@ -302,14 +478,39 @@
 			$\newline$
 			
 			10 non-stopwords that most strongly predict that the news is real:
-			
-			
+			('australia')
+			('wall')
+			('travel')
+			('turnbull')
+			('ban')
+			('korea')
+			('north')
+			('says')
+			('trumps')
+			('donald')
 			
 			10 non-stopwords that most strongly predict that the news is fake:
+			('black')
+			('watch')
+			('win')
+			('obama')
+			('new')
+			('america')
+			('just')
+			('clinton')
+			('hillary')
+			('trump')
+			
 		\end{homeworkProblem}
 		
-		\begin{homeworkProblem}[Part 3b]
-			Why might it make sense to remove stop words when interpreting the model? Why might it make sense to keep stop words?
+		\begin{homeworkProblem}[Part 3c]
+			Why might it make sense to remove stop words when interpreting the model? 
+			
+			Because stop words usually doesn't have any meaning. They are only words that constructs syntactical sentences, but doesn't contribute to the meaning of the headline. Since we want to know which are the words that predict strongly, we need only consider words that make sense. \\
+			
+			Why might it make sense to keep stop words?
+			
+			It makes sense when sometimes a fake news might tend to use a set of non-stop english words to make up the title. For example, in real news, one might not use "seems", whereas in fake news one might use the word "seems" a lot when making up a title "that creates false statements", without proofs, such as "Trump seems to have intention to declare war". In this case, real news might not use this word "seems", since they tend to only use solid proofs, and we rarely see "seems" in titles with solid proofs.
 			
 			
 		\end{homeworkProblem}
