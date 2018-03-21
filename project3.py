@@ -491,6 +491,7 @@ def combineData():
         words.extend(i)
     for i in fake_data:
         words.extend(i)
+    words = sorted(set(words), key=words.index)
     return words
 
 def transform(dataset):
