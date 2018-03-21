@@ -449,18 +449,214 @@ def get_strongly_predict(presence_or_absence, real_or_fake, dataset, dataset_lab
     return presence_strongly_predicts_real
 
 
-def part4():
-    return 0
+def sigmoid(x):
+    return 1/(1+np.exp(-x))
 
+def f(x, y, theta, lamb):
+    x = np.vstack((np.ones((1, x.shape[1])), x))
+    output = sigmoid(np.dot(theta.T,x))
+    return -sum(y*np.log(output)+(1-y)*np.log((1-output))) + lamb*np.dot(theta.T,theta)
+
+
+def df(x, y, theta, lamb):
+    x = np.vstack((np.ones((1, x.shape[1])), x))
+    output = sigmoid(np.dot(theta.T,x))
+    return np.dot(x,(output-y).T)+2*lamb*theta
+
+def h(X, Y, theta):
+    X = np.vstack((np.ones((1, X.shape[1])), X))
+    h = np.dot(theta.T, X)
+    count = 0.0
+    for i in range(Y.shape[1]):
+        if Y[0,i] == 1 and h[0,i] > 0:
+            count += 1
+        elif Y[0,i] == 0 and h[0,i] < 0:
+            count += 1
+    return count / Y.shape[1]
+
+def divide(dataset, label):
+    fakeset = []
+    realset = []
+    for i in range(len(dataset)):
+        if label[i]==1:
+            realset.append(dataset[i])
+        else:
+            fakeset.append(dataset[i])
+    
+    return fakeset, realset
+
+def combineData():
+    words = []
+    for i in real_data:
+        words.extend(i)
+    for i in fake_data:
+        words.extend(i)
+    return words
+
+def transform(dataset):
+    word = combineData()
+    X = np.zeros((len(words),0))
+    for i in dataset:
+        init = np.zeros((len(word),1))
+        for j in range(len(word)):
+            if words[j] in i:
+                init[j][0] = 1
+        X = np.hstack((X,init))
+    return X
+
+# part 4
+words = combineData()
+fTr,rTr = divide(training_set, training_label)
+fV, rV = divide(validation_set, validation_label)
+fTe, rTe = divide(test_set, test_label)
+trainX = np.hstack((transform(fTr),transform(rTr)))
+trainY = np.hstack((np.zeros((1,len(fTr))),np.ones((1,len(rTr)))))
+validX = np.hstack((transform(fV),transform(rV)))
+validY = np.hstack((np.zeros((1,len(fV))),np.ones((1,len(rV)))))
+testX = np.hstack((transform(fTe),transform(rTe)))
+testY = np.hstack((np.zeros((1,len(fTe))),np.ones((1,len(rTe)))))
+
+def grad_descent(f, df, x, y, init_t, alpha, lamb):
+    epsilon=1e-5
+    prev_t = init_t - 10 * epsilon
+    t = init_t.copy()
+    iter = 0
+    max_iter = 3000
+    loopNum = []
+    outTrain = []
+    outValid = []
+    outTest = []
+    while np.linalg.norm(t - prev_t) > epsilon and iter < max_iter:
+        prev_t = t.copy()
+        t -= alpha * df(x, y, t, lamb)
+        if iter % 30 == 0:
+            loopNum.append(iter)
+            outTrain.append(h(trainX,trainY,t))
+            outValid.append(h(validX,validY,t))
+            outTest.append(h(testX,testY,t))
+        iter += 1
+        
+    out = [outTrain, outValid, outTest]
+    return t, out, loopNum
+
+def part4():  
+    theta0 = np.zeros((len(words)+1,1))
+    #tuneP = [3e-4,1e-3,3e-3,1e-2,3e-2,1e-1]
+    tuneP = [0.003]
+    alpha = 0.1
+    minP = -1.0
+    validAcc = []
+    for tune in tuneP:
+        theta, output, lN= grad_descent(f, df, trainX, trainY, theta0, alpha, tune)
+        accr = h(validX,validY,theta)
+        validAcc.append(accr)
+        if accr > minP:
+            tunedP = tune
+            minP = accr
+            thetaP = theta
+            
+    fig = plt.figure(10)    
+    plt.semilogx(tuneP, validAcc)
+    plt.ylabel("Validation Set Accuracy")
+    plt.xlabel("tuned parameter")
+    plt.savefig("part4: tune parameter")
+    
+    print ("optimal parameter"),tunedP, ("optimal accuracy"), minP
+    print ("training set accuracy"), h(trainX, trainY, thetaP)
+    print ("validation set accuracy"), h(validX, validY, thetaP)
+    print ("test set accuracy"), h(testX, testY, thetaP)
+    fig1 = plt.figure(20)
+    plt.plot(lN, output[0], label = "Train")
+    plt.plot(lN, output[1], label = "Validation")
+    plt.plot(lN, output[2], label = "Test")
+    plt.ylabel("training accuracy")
+    plt.xlabel("iteration")
+    plt.title("Part4: Learning curve")
+    return thetaP
+
+def part6(theta):
+    #6a
+    thetaList = theta.flatten().tolist()
+    sortedList = sorted(thetaList, reverse = True)
+    print ("Top 10 positive thetas\n")
+    for i in range(10):
+        word = words[thetaList.index(sortedList[i])-1]
+        print word, sortedList[i], "\n"
+    print ("Top 10 negative thetas\n")
+    for i in np.arange(-1,-11,-1):
+        word = words[sortedList.index(sortedList[i])-1]
+        print word, sortedList[i],"\n"
+    #6b
+    i = 0
+    index = 0
+    print ("Top 10 positive theta without stop words:\n")
+    while i < 10:
+        word = words[thetaList.index(sortedList[index])-1]
+        if word not in ENGLISH_STOP_WORDS:
+            print word, sortedList[index], "\n"
+            i +=1
+        index += 1
+    print "\n"
+
+    i = 0
+    index = -1
+    print ("Top 10 negative theta without stop words:\n")
+    while i < 10:
+        word = words[thetaList.index(sortedList[index])-1]
+        if word not in ENGLISH_STOP_WORDS:
+            print word, sortedList[index],"\n"
+            i +=1
+        index -= 1
+    print "\n"
+
+def part7():
+    train = trainX
+    valid = validX
+    test = testX
+
+    train_y = trainY
+    valid_y = validY
+    test_y = testY
+    
+    depths = range(0, 1000, 100)
+    train_output = []
+    valid_output = []
+    test_output = []
+    
+    for depth in depths:
+        clf = tree.DecisionTreeClassifier(max_depth=depth)
+        clf = clf.fit(train, train_y)
+        
+        dot_data = tree.export_graphviz(clf, max_depth=2, out_file=None, feature_names=words)
+        export_graphviz(clf, max_depth=2, out_file=dot_data, filled=True, rounded=True,special_characters=True)
+        
+        avg = np.mean(clf.predict(train) == train_y)
+        train_output.append(avg)
+        
+        ave = np.mean(clf.predict(valid) == valid_y)
+        valid_output.append(avg)
+    
+        ave = np.mean(clf.predict(test) == test_y)
+        test_output.append(ave)
+    
+        plot1, = plt.plot(depths, train_output, label='training set')
+        plot2, = plt.plot(depths, valid_output, label='validation set')
+        plot3, = plt.plot(depths, test_output, label='test set')
+    
+        plt.legend([plot1, plot2, plot3], ['Training', 'Validation', 'Test'])
+        plt.title('Depths and performances')
+        plt.xlabel('Max depth')
+        plt.ylabel('Performance')
+        plt.show()
 
 if __name__ == "__main__":
     # part1()
     # part2()
     # part3a()
     part3b()
-    # part4()
+    # theta = part4()
     # part5()
-    # part6()
+    # part6(theta)
     # part7()
     # part8():
     # get_frequent_occurences(real_data)
