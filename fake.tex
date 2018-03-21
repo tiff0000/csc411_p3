@@ -522,21 +522,39 @@
 	%	PROBLEM 4
 	%----------------------------------------------------------------------------------------
 	
-	\begin{homeworkProblem}[Part 4]
-		
-		\noindent \textit{Train a Logistic Regression model on the same dataset}
-		
-		Implementation details:
-		
-		$\newline$
-		Plot the learning curves (performance vs. iteration) of the Logistic Regression model. 
-		
-		$\newline$
-		Describe how you selected the regularization parameter (and describe the experiments you used to select it).
-		
-	
-		
-	\end{homeworkProblem}
+	\begin{homeworkProblem}{Part4}
+Input of the model is a 2D matrix, where row size is the number of headlines words, and column size is total headlines size. Output of the model is a n by 1 vector.
+\\
+Learning rate: 0.1\\
+Cost function: Cross-entropy\\
+Regularization term: 3e-4,1e-3,3e-3,1e-2,3e-2,1e-1 were tested and 3e-3 was the optimal choice\\
+
+\begin{figure*}[!ht]
+\centering
+\includegraphics[scale = 0.7 ]{learning_curve_part4_.png}
+\caption{Learning curve}
+\label{fig:learning curve(part4)}
+\end{figure*}
+
+Accuracy of each set:\\
+Training set accuracy 0.733595800525\\
+Validation set accuracy 0.69387755102\\
+Testing set accuracy 0.715015321757\\
+
+The cost function of the model we use is:
+$$-\sum_j(y_jlog(\theta^TX_j)+(1-y_j)log(1-\theta^TX_j)) + \lambda \Vert \theta^2 \Vert$$
+
+\begin{figure*}[!ht]
+\centering
+\includegraphics[scale = 0.7 ]{tuned_parameter_part4_.png}
+\caption{Validation set accuracy with respect to various regularization parameter}
+\label{fig:tuning parameter(part4)}
+\end{figure*}
+
+As is stated, 3e-3 got the best performance.
+
+\end{homeworkProblem}
+
 	\clearpage
 	
 	%----------------------------------------------------------------------------------------
