@@ -545,27 +545,33 @@
 	
 	\begin{homeworkProblem}[Part 5]
 		
-		\noindent \textit{Write vectorized code that performs gradient descent with momentum, and use it to train your network. Plot the learning curves}
+		\noindent \textit{Explain what are the $\theta$s and I's in the formula below }\\
+		
+		$\theta_{0}$ + $\theta_1I_1(x)$ +$\theta_2I_2(x)
+		$+ $\theta_kI_k(x)$ $>$ thr \\
+		
+		
+		k represents the total number of words that appear in the headline (only unique words in each of the headline)\\
+		
+		Naive Bayes \\
+		
+		$I_i(x)$ = 1 if word appears in the headline, and 0 if it doesn't appear in the headline.
+		
+		$\theta_i$ = log $\frac{P(x = 1 \mid y = real)}{P(x = 1 \mid y = fake)}$ - log $\frac{P(x = 0 \mid y = real)}{P(x = 0 \mid y = fake)}$ \\
+		
+		Logistic regression \\
+		
+		I is a k * 1 vector of 1 or 0s. $I_i(x)$ = 1 if word appears in the headline, and 0 if it doesn't appear in the headline.
+		
+		
+		$\theta_i$ represent how important is a feature contributing to the final prediction of a headline being real or fake. It is the weights matrix. 
+		
+		
+		
+		
 		
 		
 		\clearpage
-		
-		\begin{lstlisting}[language=Python, caption= Gradient descent with momentum]
-
-		train_neural_network(image_prefix, type="None", momentum_term=0):
-		
-		v_w = 0 # for momentum
-		v_b = 0
-		if type == "momentum":
-		    v_w = momentum_term * v_w + alpha * df_w(train_set.T, W, b, train_label.T)
-		    W -= v_w
-		    v_b = momentum_term * v_b + alpha * df_b(train_set.T, W, b, train_label.T)
-		    b -= v_b
-				
-		if __name__ == "__main__":
-			momentum_term = 0.99
-			train_neural_network("part5", "momentum", momentum_term)
-		\end{lstlisting}
 		   
 
 	\end{homeworkProblem}
