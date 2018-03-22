@@ -753,11 +753,39 @@ In a nutshell, naive bayers and logistic regression are both good model because 
 	%	PROBLEM 8
 	%----------------------------------------------------------------------------------------
 	
-	\begin{homeworkProblem}[Part 8]
+	\begin{homeworkProblem}{Part 8}
+\noindent \textit{Mutual information}
 
-		
-	\end{homeworkProblem}
-	
-	\clearpage
+\subsection{(a) Mutual information, first split}
+\begin{align}
+I(Y; x_{470}) &= H(Y) = H(Y | x_{470}) \\
+H(Y) &= - \frac{909}{288} \log_{2} (\frac{909}{288}) -
+\frac{379}{288} \log_{2} (\frac{379}{288}) = 0.476 \\
+H(Y|x_{5170}=0) &= - \frac{96}{1909} \log_{2} (\frac{96}{1909}) -
+\frac{1813}{1909} \log_{2} (\frac{1813}{1909}) = 0.2876 \\
+H(Y|x_{5170}=1) &= - \frac{15}{379} \log_{2} (\frac{15}{379}) -
+\frac{364}{379} \log_{2} (\frac{364}{379}) = 0.2404 \\
+H(Y|x_{5170}) &= \frac{1909}{2288} H(Y|x_{5170}=0) + \frac{379}{2288} H(Y|x_{5170}=1)
+= 0.2798 \\
+I(Y; x_{5170}) &= 0.6476 - 0.2798 = 0.3678
+\end{align}
+
+\subsection{(b) Mutual information, continued}
+
+\begin{align}
+I(Y; x_{5351}) &= H(Y) = H(Y | x_{5351}) \\
+H(Y) &= - \frac{364}{379} \log_{2} (\frac{364}{379}) -
+\frac{15}{379} \log_{2} (\frac{15}{379}) = 0.2404 \\
+H(Y|x_{5351}=0) &= - \frac{81}{364} \log_{2} (\frac{81}{364}) -
+\frac{283}{364} \log_{2} (\frac{283}{364}) = 0.7648 \\
+H(Y|x_{5351}=1) &= - \frac{1}{15} \log_{2} (\frac{1}{15}) -
+\frac{14}{15} \log_{2} (\frac{14}{15}) = 0.3534 \\
+H(Y|x_{5351}) &= \frac{364}{379} H(Y|x_{5351}=0) + \frac{15}{379} H(Y|x_{5351}=1)
+= 0.7485 \\
+I(Y; x_{5351}) &= 0.2404 - 0.7485 = -0.5081
+\end{align}
+
+\end{homeworkProblem}
+\clearpage
 
 \end{document}
