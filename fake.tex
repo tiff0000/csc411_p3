@@ -712,15 +712,43 @@ It is reasonable to use the magnitude in this problem because it is 0-1 classifi
 	%----------------------------------------------------------------------------------------
 	%	PROBLEM 7
 	%----------------------------------------------------------------------------------------
-	
-	\begin{homeworkProblem}[Part 7]
-	
+	\begin{homeworkProblem}{Part 7}
+\noindent \textbf{\textit{Part 7a)}}
 
-	
+Max\_depth is the tuned parameter. 
+\\
+Best max\_depth is 150 on condition that it reaches the best training performance at once.  When max\_dept = 800, we have the best validation performance. Max\_depth = 150 is the best parameter in my opinion because the training process afterwards does not actually improve training performance, it only increases the possibility of overfit. 
+\\
+I tried different values in max\_leaf\_nodes. It reduced the training set accuracy and improved better results in validation set and test set.
 
-	\end{homeworkProblem}
+\begin{figure*}[!ht]
+\centering
+\includegraphics[scale = 0.7 ]{Depths_and_performances_part7a_.png}
+\caption{Depths and performances(part7a)}
+\label{fig:part7a graph}
+\end{figure*}
 
-	\clearpage
+\clearpage
+
+\noindent \textbf{\textit{Part 7b)}}
+\begin{figure*}[!ht]
+\centering
+\includegraphics[scale = 0.7]{Decision_tree_part7b_.JPG}
+\caption{Visualization of decision tree}
+\label{fig:Decision Tree}
+\end{figure*}
+
+Common words in decision tree as the ones in Part 3a and Part 6a: "donald", "hillary", "trumps", "trump", "the" appear as the most important features both in decision tree and Naive Bayes; "donald", "hillary", "trumps" appear as the most important features both in decision tree and Logistic Regression. 
+
+\noindent \textbf{\textit{Part 7c)}}
+Training set performance: logistic regression>Decision Tree>Naive Bayers\\
+Validation set performance: Naive Bayers>logistic regression>Decision Tree\\
+Test set performance: logistic regression>Naive Bayers>Decision Tree\\
+
+In a nutshell, naive bayers and logistic regression are both good model because of their overall performance. Decision Tree model is worse than those two models. It performs badly due to overfitting issues.
+
+\end{homeworkProblem}
+\clearpage
 	%----------------------------------------------------------------------------------------
 	%	PROBLEM 8
 	%----------------------------------------------------------------------------------------
