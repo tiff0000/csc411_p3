@@ -591,25 +591,114 @@ As is stated, 3e-3 got the best performance.
 	%----------------------------------------------------------------------------------------
 	%	PROBLEM 6
 	%----------------------------------------------------------------------------------------
-	
-	\begin{homeworkProblem}[Part 6]
-		
+	\begin{homeworkProblem}{Part 6}
+\noindent \textbf{\textit{Part 6a)}}
+Top 10 positive $\theta$s:\\
+trumps 9.95558870346 \\
 
+australia 6.85314372598 \\
 
-		
-		\begin{homeworkProblem}[Part 6d]
-			Momentum trajectory walks faster than vanilla gradient descent, and momentum can lead to points past the central local minimum while vanilla gradient descent walks directly to the local point. The cause of these differences is the extra term in momentum which is momentum\_term * v\_w speeds up the walking pace, and it retains effects of previous v\_m term.
-		\end{homeworkProblem}
-		
-		\begin{homeworkProblem}[Part 6e]
-			I found proper settings by checking the gradient descent values and trial-and-error. Whichever weights' values are the most among all the gradient descent values, should be chosen as the two variables. It speeds up the descent process. Another setting is momentum term. Choose it by trial-and-error to see which one fits the graph the best. Initial weights values are also important because the directions of original gradient descents can demonstrate the difference between two ways, too.\newline
-			\newline Other settings do not demonstrate the benefits of momentum are alpha and axis range. Choose plot axis which can zoom in the contour at the proper size and alpha which is neither too large nor too small. Momentum term do not really affect visualization unless it is so large that points past local minimum too much or offtrack too much.
-		\end{homeworkProblem}
+keating 6.57406540041 \\
 
-		
-	\end{homeworkProblem}
-	
-	\clearpage
+korea 6.35918006046 \\
+
+turnbull 5.95575911495 \\
+
+ban 5.41752108204 \\
+
+debate 5.30531752256 \\
+
+accept 5.30511003546 \\
+
+north 5.26097515049 \\
+
+tax 5.24804824411 \\
+
+Top 10 negative $\theta$s:\\
+intensified -9.41612740596 \\
+
+indictment -8.01573155234 \\
+
+outsiders -7.31768911487 \\
+
+ww -6.84589755987 \\
+
+dismissing -6.41391572951 \\
+
+victoire -6.36644007845 \\
+
+totalement -6.26605371406 \\
+
+clipse -6.22355120767 \\
+
+dit -6.06041099787 \\
+
+livre -6.03790764251 \\
+
+compare with 3a:\\
+Some common words between top 10 positive thetas and top 10 words whose presence most strongly predicts that the news is fake.\\
+Some common words between top 10 negative thetas and top 10 words whose presence most strongly predicts that the news is real.\\
+
+Similarity is because of common sense of definitions of two types of the ten words, and difference is because of assumption is probability-based, it can vary to some degree of instability.
+
+\noindent \textbf{\textit{Part 6b)}}
+\\[5pt]
+Top 10 positive theta without stop words:\\
+
+trumps 9.95558870346 \\
+
+australia 6.85314372598 \\
+
+keating 6.57406540041 \\
+
+korea 6.35918006046 \\
+
+turnbull 5.95575911495 \\
+
+ban 5.41752108204 \\
+
+debate 5.30531752256 \\
+
+accept 5.30511003546 \\
+
+north 5.26097515049 \\
+
+tax 5.24804824411 \\\\
+
+Top 10 negative theta without stop words:\\
+
+autistic -9.41612740596 \\
+
+breaking -8.01573155234 \\
+
+watch -7.31768911487 \\
+
+happened -6.84589755987 \\
+
+voter -6.41391572951 \\
+
+3 -6.26605371406 \\
+
+propaganda -6.22355120767 \\
+
+comment -6.06041099787 \\
+
+peacenik -6.03790764251 \\
+
+entire -5.91200525043 \\
+
+Compare with 3b:\\
+Some common words between top 10 positive thetas and top 10 words whose presence most strongly predicts that the news is fake without stop words.\\
+Some common words between top 10 negative thetas and top 10 words whose presence most strongly predicts that the news is real.
+
+\noindent \textbf{\textit{Part 6c)}}
+Without normalization, words with small magnitude would have more effects on output, or in other words, are more important than they are supposed to be in parameter numeric values. This would have bad influence because parameters value do not make that much sense any more as normalized ones because there are some bias produced by magnitude issues. 
+
+It is reasonable to use the magnitude in this problem because it is 0-1 classification problem.
+
+\end{homeworkProblem}
+\clearpage
+
 	%----------------------------------------------------------------------------------------
 	%	PROBLEM 7
 	%----------------------------------------------------------------------------------------
