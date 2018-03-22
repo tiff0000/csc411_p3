@@ -2,6 +2,10 @@ import operator
 import random
 import math
 import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import tree
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+import graphviz
 
 
 
