@@ -614,45 +614,61 @@ def part6(theta):
         index -= 1
     print "\n"
 
-def part7():
-    train = trainX
-    valid = validX
-    test = testX
-
-    train_y = trainY
-    valid_y = validY
-    test_y = testY
+def h7(x,y,clf):
+    t = clf.predict(x)
+    count = 0.0
+    for i in range(len(y)):
+        if t[i] == y[i]:
+            count +=1
+    return count/len(t)
     
-    depths = range(0, 1000, 100)
+def part7():
+    trainx7 = trainX.T
+    trainy7 = trainY.flatten()
+    validx7 = validX.T
+    validy7 = validY.flatten()
+    testx7 = testX.T
+    testy7 = testY.flatten()
+    
+    depths = range(50, 1000, 50)
     train_output = []
     valid_output = []
     test_output = []
+    minP = -1.0
     
     for depth in depths:
         clf = tree.DecisionTreeClassifier(max_depth=depth)
-        clf = clf.fit(train, train_y)
+        clf = clf.fit(trainx7, trainy7)
+        tr7 = h7(trainx7,trainy7,clf)
+        va7 = h7(validx7,validy7,clf)
+        te7 = h7(testx7,testy7,clf)
+        train_output.append(tr7)
+        valid_output.append(va7)
+        test_output.append(te7)
         
-        dot_data = tree.export_graphviz(clf, max_depth=2, out_file=None, feature_names=words)
-        export_graphviz(clf, max_depth=2, out_file=dot_data, filled=True, rounded=True,special_characters=True)
+        if va7>minP:
+            minP = va7
+            depthP = depth
+            
+    print depthP, minP
         
-        avg = np.mean(clf.predict(train) == train_y)
-        train_output.append(avg)
+    fig = plt.figure(20)
+    plot1, = plt.plot(depths, train_output, label='training set')
+    plot2, = plt.plot(depths, valid_output, label='validation set')
+    plot3, = plt.plot(depths, test_output, label='test set')
+    
+    plt.legend([plot1, plot2, plot3], ['Training', 'Validation', 'Test'])
+    plt.title('Depths and performances(part7a)')
+    plt.xlabel('Max depth')
+    plt.ylabel('Performance')
+    plt.show()
         
-        ave = np.mean(clf.predict(valid) == valid_y)
-        valid_output.append(avg)
-    
-        ave = np.mean(clf.predict(test) == test_y)
-        test_output.append(ave)
-    
-        plot1, = plt.plot(depths, train_output, label='training set')
-        plot2, = plt.plot(depths, valid_output, label='validation set')
-        plot3, = plt.plot(depths, test_output, label='test set')
-    
-        plt.legend([plot1, plot2, plot3], ['Training', 'Validation', 'Test'])
-        plt.title('Depths and performances')
-        plt.xlabel('Max depth')
-        plt.ylabel('Performance')
-        plt.show()
+    dot_data = tree.export_graphviz(clf, max_depth=2, out_file=None, feature_names=words)
+    export_graphviz(clf, max_depth=2, out_file=dot_data,                              filled=True, rounded=True,
+                            special_characters=True)
+    graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
+    with open("Decision_tree(part7b).png", "wb") as f:
+            f.write(graph.create_png())
 
 if __name__ == "__main__":
     # part1()
