@@ -237,7 +237,6 @@
 		
 		\noindent \textit{Problem: Implement the Naive Bayes algorithm for predicting whether a headline is real or fake. }
 		
-		
 		$\newline$
 		Implementation details:
 		We used naive bayes probability to predict whether a headline is real or fake.
@@ -248,8 +247,6 @@
 		P(real $\mid$ headline)  = likelihood\_probability(headline) * prior\_probability(real)
 		
 		P(fake $\mid$ headline) = likelihood\_probability(headline) * prior\_probability(fake)
-		
-		
 		
 		= P(real $\mid$ headline)  = $\sum log(P(w_i | real)) $+  log(prior\_probability(real))
 		
@@ -269,7 +266,7 @@
 		
 		We used validation set to tune the parameters m and p
 		
-				Table of probability for each word  (P(w $\mid$ real), P(w $\mid$ fake))
+		Table of probability for each word  (P(w $\mid$ real), P(w $\mid$ fake))
 				
 	\begin{lstlisting}[language=Python, caption=Make a table of probability for each word]		
 	probability_dict = {}
@@ -338,11 +335,11 @@
 		
 		Results:
 		
-		training set performance: 97.8127734033\%
+		training set performance: 94.8127734033\%
 		
-		validation set performance: 99.387755102\%
+		validation set performance: 90.387755102\%
 		
-		test set performance: 98.0592441267\%
+		test set performance: 91.0592441267\%
 
 		
 	\end{homeworkProblem}
@@ -373,6 +370,7 @@
 			
 			Then we iterate through the table to find the top 10 highest values.
 			
+						
 			$\newline$
 			
 			List the 10 words whose presence most strongly predicts that the news is real:
@@ -469,7 +467,7 @@
 			$\newline$
 			Compare the influence of presence vs absence of words on predicting whether the headline is real or fake news.
 			
-			
+			The strong presence of words in real news (words that appears a lot)  and absence in fake news strongly predicts that the news is real. The strong presence of words in fake news and absence in real news strongly predicts that the news is fake.
 			
 		\end{homeworkProblem}
 		
