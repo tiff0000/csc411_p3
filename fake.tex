@@ -523,20 +523,38 @@
 	%----------------------------------------------------------------------------------------
 	
 	\begin{homeworkProblem}[Part 4]
-		
-		\noindent \textit{Train a Logistic Regression model on the same dataset}
-		
-		Implementation details:
-		
-		$\newline$
-		Plot the learning curves (performance vs. iteration) of the Logistic Regression model. 
-		
-		$\newline$
-		Describe how you selected the regularization parameter (and describe the experiments you used to select it).
-		
-	
-		
-	\end{homeworkProblem}
+Input of the model is a 2D matrix, where row size is the number of headlines words, and column size is total headlines size. Output of the model is a n by 1 vector.
+\\
+Learning rate: 0.1\\
+Cost function: Cross-entropy\\
+Regularization term: 3e-4,1e-3,3e-3,1e-2,3e-2,1e-1 were tested and 3e-3 was the optimal choice\\
+
+\begin{figure*}[!ht]
+\centering
+\includegraphics[scale = 0.7 ]{learning_curve_part4.png}
+\caption{Learning curve}
+\label{fig:learning curve(part4)}
+\end{figure*}
+
+Accuracy of each set:\\
+Training set accuracy 1.0\\
+Validation set accuracy 0.830612244898\\
+Test set accuracy 0.821246169561\\
+
+The cost function of the model we use is:
+$$-\sum_j(y_jlog(\theta^TX_j)+(1-y_j)log(1-\theta^TX_j)) + \lambda \Vert \theta^2 \Vert$$
+
+\begin{figure*}[!ht]
+\centering
+\includegraphics[scale = 0.7 ]{tuned_parameter_part4.png}
+\caption{Validation set accuracy with respect to various regularization parameter}
+\label{fig:tuning parameter(part4)}
+\end{figure*}
+
+As is stated, 3e-3 got the best performance.
+
+\end{homeworkProblem}
+
 	\clearpage
 	
 	%----------------------------------------------------------------------------------------
@@ -567,10 +585,6 @@
 		$\theta_i$ represent how important is a feature contributing to the final prediction of a headline being real or fake. It is the weights matrix. 
 		
 		
-		
-		
-		
-		
 		\clearpage
 		   
 
@@ -582,18 +596,6 @@
 	
 	\begin{homeworkProblem}[Part 6]
 		
-
-
-		
-		\begin{homeworkProblem}[Part 6d]
-			Momentum trajectory walks faster than vanilla gradient descent, and momentum can lead to points past the central local minimum while vanilla gradient descent walks directly to the local point. The cause of these differences is the extra term in momentum which is momentum\_term * v\_w speeds up the walking pace, and it retains effects of previous v\_m term.
-		\end{homeworkProblem}
-		
-		\begin{homeworkProblem}[Part 6e]
-			I found proper settings by checking the gradient descent values and trial-and-error. Whichever weights' values are the most among all the gradient descent values, should be chosen as the two variables. It speeds up the descent process. Another setting is momentum term. Choose it by trial-and-error to see which one fits the graph the best. Initial weights values are also important because the directions of original gradient descents can demonstrate the difference between two ways, too.\newline
-			\newline Other settings do not demonstrate the benefits of momentum are alpha and axis range. Choose plot axis which can zoom in the contour at the proper size and alpha which is neither too large nor too small. Momentum term do not really affect visualization unless it is so large that points past local minimum too much or offtrack too much.
-		\end{homeworkProblem}
-
 		
 	\end{homeworkProblem}
 	
@@ -604,16 +606,7 @@
 	
 	\begin{homeworkProblem}[Part 7]
 	
-	Assumption: For each neuron, due to unknown size, suppose matrix multiplication complexity is 1.
-	
-	$ \newline$
-	 For i-th layer, each j in K neurons, backpropagation computes $w_j$ with complexity of O(K) for all i.
-	
-	$\newline$
-	 If it computes individually, $w_j$ has computation complexity of O($K^{2i-3}$)
-	
-	$ \newline$  
-	 Final computation complexity, for backpropagation, is O(N $K^2$), individually, is O($K^{2N-2}$) \newline When N is larger than 2, backpropagation is O($K^{2N-4}$) faster than individual computation on condition that N is known.
+
 	
 
 	\end{homeworkProblem}
@@ -624,232 +617,10 @@
 	%----------------------------------------------------------------------------------------
 	
 	\begin{homeworkProblem}[Part 8]
-		\noindent \textit{Use a fully-connected neural network with a single hidden layer, but train using mini-batches using an optimizer}
-		
-		Description of the system:
-		$\newline$
-		
-		We initialize inputs and weights as follows:
-		
-		dim\_x = 64 * 64 * 3
-		
-		dim\_h = 500
-		
-		dim\_out = 6
-		
-		We used one hidden layer of size 500. 
-		
-		The resolution was 64 * 64.
-		
-		We used Adam as optimizer
-		
-		The model we used was:
-			\begin{lstlisting}[language=Python, caption= model of the system]
-		x = Variable(torch.from_numpy(train_set[train_index]), 
-		                                  requires_grad=False).type(dtype_float)
-		y_classes = Variable(torch.from_numpy(np.argmax(train_label[train_index], 1)),
-		                          requires_grad=False).type(dtype_long)
-		
-		model = torch.nn.Sequential(
-		torch.nn.Linear(dim_x, dim_h),
-		torch.nn.ReLU(),
-		torch.nn.Linear(dim_h, dim_out),
-		)
-		\end{lstlisting}
-		
-		
-		
-		Optimization steps and outputs:
-		
-		We tried varying parameters, optimizers and functions and other factors that might improve the performance, such as initial weights, learning rate, batch size, number of iterations, optimization function to optimize the training performance, activation function, number of hidden layers, weight of hidden layers.
-		
-			\begin{lstlisting}[language=Python, caption=initial inputs and weights and parameters and functions chosen for optimization]
-			dim_x = 64 * 64 * 3
-			dim_h = 500
-			dim_out = 6
-			
-			learning_rate = 1e-4
-			max_iteration = 500
-			optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-			loss_fn = torch.nn.CrossEntropyLoss()
-			\end{lstlisting}
-		
-		Observations:
-		Activation function: Since we are using mini-batches, we found out that ReLU was the best option. It accelerates the convergencce of stochastic gradient descent compared to sigmoid and tanh functions.
-		
-		Learning rate: We first tried using learning rate of 0.001 then increased to 0.00001. We found out that the performance was best at learning rate = 0.0001. The performance improved from 0.001 to 0.0001 but decreased from 0.0001 to 0.00001. 
-		
-		Number of layers: We experimented with a single and 2 hidden layers, with fixed weight. Keeping other parameters unchanged, we found unsignificant difference between having 2 or 1 hidden layers.
-		
-		Weights: We experimented with weights from 20 to 700. At low weight, the test performance had poor results. The accuracy performance increased slower compared to having setting weight as 700. Also, the test performance was unstable when the weight was low. It might first increase and decrease later.
-		
-		\clearpage
-		Learning curve:
-		
 
-		
-		Final performance: The performance of the test set was at 85.83\%. 
-		
-		The results were:
-		
-		test performance:  36.6666666667
-		
-		test performance:  83.3333333333
-		
-		test performance:  85.0
-		
-		test performance:  85.0
-		
-		test performance:  86.6666666667
-		
-		test performance:  85.8333333333
-		
-		test performance:  85.8333333333
-		
-		test performance:  85.8333333333
-		
-		test performance:  85.8333333333
-		
-		test performance:  85.8333333333
-		
-		test performance:  85.8333333333
 		
 	\end{homeworkProblem}
 	
 	\clearpage
-	%----------------------------------------------------------------------------------------
-		%----------------------------------------------------------------------------------------
-		%	PROBLEM 9
-		%----------------------------------------------------------------------------------------
-		
-		\begin{homeworkProblem}[Part 9]
-		\noindent \textit{Select two of the actors, and visualize the weights of the hidden units that are useful for classifying input photos as those particular actors. Explain how you selected the hidden units}	
-		
-		Actors selected: balwin and bracco
-		
-		Approach: Try lots of images in a dataset, and
-		see which ones active the neuron the most.
-		
-		\end{homeworkProblem}
-	
-		%----------------------------------------------------------------------------------------
-		%----------------------------------------------------------------------------------------
-		%	PROBLEM 10
-		%----------------------------------------------------------------------------------------
-		\clearpage
-		\begin{homeworkProblem}[Part 10]
-			
-		We modified code for AlexNet.  We want to extract activation values before it classifies the actor, so we deleted the line x = x.classifier(x) in forward() method. 
-		
-		The modified code is:
-		
-		\begin{lstlisting}[language=Python, caption=modified code for AlexNet]
-		class MyAlexNet(nn.Module):
-			def load_weights(self):
-				an_builtin = torchvision.models.alexnet(pretrained=True)
-			
-			features_weight_i = [0, 3, 6, 8, 10]
-			for i in features_weight_i:
-				self.features[i].weight = an_builtin.features[i].weight
-				self.features[i].bias = an_builtin.features[i].bias
-			
-			classifier_weight_i = [1, 4, 6]
-			for i in classifier_weight_i:
-				self.classifier[i].weight = an_builtin.classifier[i].weight
-				self.classifier[i].bias = an_builtin.classifier[i].bias
-			
-			def __init__(self, num_classes=1000):
-				super(MyAlexNet, self).__init__()
-				self.features = nn.Sequential(
-					nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2),
-					nn.ReLU(inplace=True),
-					nn.MaxPool2d(kernel_size=3, stride=2),
-					nn.Conv2d(64, 192, kernel_size=5, padding=2),
-					nn.ReLU(inplace=True),
-					nn.MaxPool2d(kernel_size=3, stride=2),
-					nn.Conv2d(192, 384, kernel_size=3, padding=1),
-					nn.ReLU(inplace=True),
-					nn.Conv2d(384, 256, kernel_size=3, padding=1),
-					nn.ReLU(inplace=True),
-					nn.Conv2d(256, 256, kernel_size=3, padding=1),
-					nn.ReLU(inplace=True),
-					nn.MaxPool2d(kernel_size=3, stride=2)
-				)
-			
-			self.classifier = nn.Sequential(
-				nn.Dropout(),
-				nn.Linear(256 * 6 * 6, 4096),
-				nn.ReLU(inplace=True),
-				nn.Dropout(),
-				nn.Linear(4096, 4096),
-				nn.ReLU(inplace=True),
-				nn.Linear(4096, num_classes),
-			)
-			
-			self.load_weights()
-			
-			# we modified this section
-			def forward(self, x):
-				x = self.features(x)
-				x = x.view(x.size(0), 256 * 6 * 6)
-		
-		\end{lstlisting}
-		
-		Extract the values of the activations of AlexNet on the face images in a particular layer
-		
-		Input images size: 227*227
-		
-		We will extract activations of the network during the forward pass.
-		
-		Then, we use part 8 model to train a fully-connected neural network by taking the activations as input.
-		
-		Get the activation values as input to part8 code as follows:
-		
-		\begin{lstlisting}[language=Python, caption=How to get activation values]
-		# get train and test activations using forward
-		x_train = Variable(torch.from_numpy(train_set[:]), requires_grad=False).type(torch.FloatTensor)
-		train_activation = np.vstack((train_activation, model.forward(x_train).data.numpy()))
-		x_test = Variable(torch.from_numpy(train_set[:]), requires_grad=False).type(torch.FloatTensor)
-		test_activation = np.vstack((test_activation, model.forward(x_test).data.numpy()))
-		
-		train_using_mini_batches(act, train_activation, test_activation, "part10", 227)
-		\end{lstlisting}
-		
-		$\newline$
-		Performance:
-		
-		The performance dramatically improved compared to part8.
-		
-		Using myAlexNet model, we were able to obtain a final performance of 95.83%
-		
-		The following is the performance:
-		
-		('epoch: ', 0, 'train performance:', 55.21172638436482, 'test performance: ', 45.83333333333333)
-		
-		('epoch: ', 50, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
-		
-		('epoch: ', 100, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
-		
-		('epoch: ', 150, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
-		
-		('epoch: ', 200, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
-		
-		('epoch: ', 250, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
-		
-		('epoch: ', 300, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
-		
-		('epoch: ', 350, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
-		
-		('epoch: ', 400, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
-		
-		('epoch: ', 450, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
-		
-		('epoch: ', 499, 'train performance:', 100.0, 'test performance: ', 95.83333333333334)
-		
-		The performance improved by more than 30\% compared to part 8.
-		
-		Run the part10 code using:
-		python myalexnet.py
-		
-		\end{homeworkProblem}
+
 \end{document}
